@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Login — Kisha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+
+<div id="app">
+  <div class="screen active" id="screen-login">
+
+    <div class="auth-wrap">
+      <div class="glass auth-card">
+        <div class="logo" style="text-align:center; margin-bottom:20px;">Kisha ✿</div>
+        <div class="auth-title">Welcome back</div>
+        <div class="auth-sub">Login to continue your journey</div>
+        <div class="field"><label>Email</label><input type="email" placeholder="you@example.com"></div>
+        <div class="field"><label>Password</label><input type="password" placeholder="••••••••"></div>
+        <div class="field-row">
+          <label class="checkbox-row mb-0"><input type="checkbox"> Remember me</label>
+          <a href="#">Forgot password?</a>
+        </div>
+        <button class="clay-btn btn-primary btn-block" onclick="window.location.href='dashboard.html'">Login</button>
+        <div class="auth-switch">Don't have an account? <a onclick="window.location.href='signup.html'">Create Account</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="js/main.js"></script>
+
+</body>
+</html>

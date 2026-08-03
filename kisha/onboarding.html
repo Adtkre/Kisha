@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Onboarding — Kisha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+
+<div id="app">
+  <div class="screen active" id="screen-onboarding">
+
+    <div class="progress-track"><div class="progress-fill" id="obProgress" style="width:20%;"></div></div>
+
+    <div class="glass" style="padding:26px;">
+      <!-- step 1 -->
+      <div class="ob-step active" data-step="1">
+        <div class="ob-title">About You</div>
+        <div class="ob-sub">Let's get to know you a little</div>
+        <div class="field"><label>Name</label><input type="text" placeholder="Aditi"></div>
+        <div class="field"><label>Age</label><input type="number" placeholder="24"></div>
+        <div class="field"><label>Height (cm)</label><input type="number" placeholder="162"></div>
+        <div class="field"><label>Weight (kg)</label><input type="number" placeholder="55"></div>
+      </div>
+      <!-- step 2 -->
+      <div class="ob-step" data-step="2">
+        <div class="ob-title">Cycle Information</div>
+        <div class="ob-sub">Help us understand your rhythm</div>
+        <div class="field"><label>Last Period Start</label><input type="date"></div>
+        <div class="field"><label>Last Period End</label><input type="date"></div>
+        <div class="field"><label>Average Cycle Length (days)</label><input type="number" placeholder="28"></div>
+        <div class="field"><label>Average Period Length (days)</label><input type="number" placeholder="5"></div>
+        <div class="field"><label>Regularity</label>
+          <div class="pill-group"><div class="pill selected" onclick="selectPill(this)">Regular</div><div class="pill" onclick="selectPill(this)">Irregular</div></div>
+        </div>
+      </div>
+      <!-- step 3 -->
+      <div class="ob-step" data-step="3">
+        <div class="ob-title">Lifestyle</div>
+        <div class="ob-sub">A quick snapshot of your habits</div>
+        <div class="field"><label>Average Sleep (hrs)</label><input type="range" class="slider-input" min="0" max="12" value="7"></div>
+        <div class="field"><label>Exercise Frequency</label>
+          <select><option>Rarely</option><option>1–2×/week</option><option>3–4×/week</option><option>Daily</option></select>
+        </div>
+        <div class="field"><label>Stress Level</label>
+          <div class="segmented"><div class="seg-opt" onclick="selectSeg(this)">Low</div><div class="seg-opt selected" onclick="selectSeg(this)">Moderate</div><div class="seg-opt" onclick="selectSeg(this)">High</div></div>
+        </div>
+        <div class="field"><label>Water Intake (glasses/day)</label><input type="number" placeholder="8"></div>
+      </div>
+      <!-- step 4 -->
+      <div class="ob-step" data-step="4">
+        <div class="ob-title">Health</div>
+        <div class="ob-sub">Optional — helps us personalize insights</div>
+        <div class="field"><label>Conditions</label>
+          <div class="chip-group">
+            <div class="chip" onclick="toggleChip(this)">PCOS</div>
+            <div class="chip" onclick="toggleChip(this)">Birth Control</div>
+            <div class="chip" onclick="toggleChip(this)">Pregnancy</div>
+          </div>
+        </div>
+        <div class="field"><label>Medications</label><textarea rows="3" placeholder="List any medications..."></textarea></div>
+      </div>
+      <!-- step 5 -->
+      <div class="ob-step" data-step="5">
+        <div class="ob-complete">
+          <div class="check-anim">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M4 12l6 6L20 6"/></svg>
+          </div>
+          <div class="ob-title" style="margin-bottom:6px;">Welcome to Kisha 🌸</div>
+          <div class="ob-sub">Everything's set. Let's take a look at your dashboard.</div>
+          <button class="clay-btn btn-primary btn-block" onclick="window.location.href='dashboard.html'">Go to Dashboard</button>
+        </div>
+      </div>
+
+      <div class="ob-nav" id="obNav">
+        <button class="clay-btn btn-secondary" style="flex:1;" id="obBack" onclick="obChange(-1)">Back</button>
+        <button class="clay-btn btn-primary" style="flex:1;" id="obNext" onclick="obChange(1)">Continue</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="js/main.js"></script>
+
+</body>
+</html>
