@@ -298,121 +298,160 @@ input,textarea,select{font-family:'Inter',sans-serif;}
 }
 
 /* ================================================
-   FULL-BLEED CARD LANDING (index.html)
-   The page itself IS the card stack — no separate
-   heading section, logo/login sit inside the same
-   pink field the cards live in, cards fill the screen.
+   FULL-SCREEN STORY LANDING (index.html)
+   The whole viewport IS one card. Instagram/WhatsApp
+   -status style: segmented top progress bar, tap left/
+   right (or swipe) to move between 3 full-bleed cards.
    ================================================ */
-html, body.fan-body{height:100%;}
-body.fan-body{
-  background:var(--portrait-pink);
+html, body.story-body{height:100%; margin:0;}
+body.story-body{overflow:hidden;}
+
+.story-viewport{
+  position:fixed; inset:0;
+  width:100vw; height:100vh;
   overflow:hidden;
-  display:flex;
-  flex-direction:column;
-  height:100vh;
+  background:var(--portrait-pink);
+  cursor:pointer;
+  user-select:none;
 }
-.fan-topbar{
+
+/* segmented top progress bar, like stories */
+.story-progress{
+  position:fixed; top:16px; left:16px; right:16px;
+  display:flex; gap:6px;
+  z-index:30;
+}
+.story-seg{
+  flex:1; height:3.5px; border-radius:4px;
+  background:rgba(47,27,26,0.16);
+  overflow:hidden;
+}
+.story-seg-fill{
+  display:block; height:100%; width:0%;
+  background:var(--weathervane);
+  border-radius:4px;
+}
+.story-seg.completed .story-seg-fill{width:100%;}
+.story-seg.active .story-seg-fill{animation:storyFill 6s linear forwards;}
+@keyframes storyFill{ from{width:0%;} to{width:100%;} }
+
+/* top bar: logo + quick login shortcut */
+.story-topbar{
+  position:fixed; top:34px; left:20px; right:20px;
+  z-index:25;
   display:flex; align-items:center; justify-content:space-between;
-  flex-shrink:0;
-  padding:22px 24px;
-  position:relative; z-index:5;
 }
-.fan-topbar .logo{color:var(--berry-bush);}
-.fan-login-link{
-  font-size:13.5px; font-weight:700; color:var(--weathervane);
+.story-topbar .logo{color:var(--berry-bush); font-size:30px;}
+.story-topbar .logo span{font-size:23px;}
+.story-login-link{
+  font-size:12.5px; font-weight:700; color:var(--weathervane);
   background:rgba(255,255,255,0.7); border:1px solid rgba(122,64,77,0.18);
-  padding:10px 22px; border-radius:16px; text-decoration:none;
-  backdrop-filter:blur(10px); transition:all .2s ease;
+  padding:8px 18px; border-radius:14px; text-decoration:none;
+  backdrop-filter:blur(10px);
 }
-.fan-login-link:hover{background:#fff;}
 
-.fan-wrap{
-  position:relative;
-  flex:1; min-height:0;
-  display:flex; align-items:flex-start; justify-content:center;
-  gap:16px;
-  z-index:2;
-  padding:0 20px 22px;
+/* flowing water-line background decoration */
+.story-waves{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  color:var(--mulberry);
+  z-index:0;
+  pointer-events:none;
 }
-.fan-card{
-  width:340px; height:100%; max-height:720px;
-  border-radius:36px;
-  padding:30px 28px 26px;
+.story-content{
+  position:relative; z-index:2;
+  width:100%; height:100%;
   display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+}
+
+/* the sliding track of 3 full-bleed cards */
+.story-slides{
+  display:flex;
+  width:300%; height:100%;
+  transition:transform .5s cubic-bezier(.25,.85,.3,1);
+}
+.story-slide{
+  width:33.3333%; height:100%;
+  box-sizing:border-box;
   position:relative;
-  flex-shrink:0;
-  box-shadow:0 24px 50px -18px rgba(47,27,26,0.3), 0 1px 0 rgba(255,255,255,0.4) inset;
-  transition:transform .45s cubic-bezier(.2,.8,.3,1), box-shadow .45s ease;
+  overflow:hidden;
 }
-.fan-card.left{
-  background:linear-gradient(160deg, var(--portrait-pink), #F6E2EA);
-  transform:rotate(-6deg) translate(24px, 10px);
-  z-index:1;
+.story-content{
+  padding:0 32px; padding-top:120px; padding-bottom:70px;
+  align-items:flex-start;
 }
-.fan-card.right{
-  background:linear-gradient(160deg, #E9C3D3, var(--gizmo));
-  transform:rotate(6deg) translate(-24px, 10px);
-  z-index:1;
-}
-.fan-card.center{
-  background:linear-gradient(165deg, #FBF2F5, #F0D2DE 120%);
-  transform:rotate(0deg) scale(1.04);
-  z-index:3;
-  box-shadow:0 34px 70px -16px rgba(47,27,26,0.4), 0 1px 0 rgba(255,255,255,0.5) inset;
-  margin:0 -10px;
-}
-.fan-wrap:hover .fan-card.left{transform:rotate(-9deg) translate(18px, 16px);}
-.fan-wrap:hover .fan-card.right{transform:rotate(9deg) translate(-18px, 16px);}
-.fan-wrap:hover .fan-card.center{transform:rotate(0deg) translateY(-10px) scale(1.06);}
+.story-slide.s1{background:linear-gradient(160deg, #FBF2F5, var(--portrait-pink) 130%);}
+.story-slide.s2{background:linear-gradient(160deg, var(--portrait-pink), #E9C3D3 130%);}
+.story-slide.s3{background:linear-gradient(160deg, #E9C3D3, var(--gizmo) 130%);}
 
-.fan-dashes{display:flex; gap:6px; margin-bottom:20px; flex-shrink:0;}
-.fan-dashes span{width:26px; height:3px; border-radius:4px; background:rgba(47,27,26,0.55);}
-.fan-dashes span:last-child{width:14px; opacity:0.5;}
+.story-dashes{display:flex; gap:6px; margin-bottom:22px;}
+.story-dashes span{width:26px; height:3px; border-radius:4px; background:rgba(47,27,26,0.5);}
+.story-dashes span:last-child{width:14px; opacity:0.5;}
 
-.fan-heading{
-  font-family:'Playfair Display', serif;
-  font-weight:700; font-size:36px; line-height:1.06;
-  color:var(--weathervane); margin:0 0 20px; flex-shrink:0;
-}
-.fan-icon{
-  width:100%; flex:1; min-height:80px; max-height:150px;
+.story-icon{
+  width:100%; max-width:180px; height:140px;
   display:flex; align-items:center; justify-content:center;
-  margin-bottom:16px;
+  margin:6px 0 22px;
+  align-self:center;
 }
-.fan-icon svg{width:60%; height:60%; max-width:130px; max-height:130px; overflow:visible;}
-.fan-desc{
-  font-size:14px; line-height:1.6; color:var(--weathervane); opacity:0.82;
-  margin:0; flex-shrink:0;
+.story-icon svg{width:100%; height:100%; overflow:visible;}
+
+.story-heading{
+  font-family:'Playfair Display', serif;
+  font-weight:700; font-size:40px; line-height:1.08;
+  color:var(--weathervane); margin:0 0 16px;
+  text-align:center; width:100%;
 }
-.fan-actions{
-  display:flex; align-items:center; justify-content:space-between;
-  gap:10px; margin-top:20px; padding-top:18px; border-top:1px solid rgba(47,27,26,0.12);
-  flex-shrink:0;
+.story-heading em{color:var(--berry-bush); font-style:italic;}
+
+.story-desc{
+  font-size:15px; line-height:1.65; color:var(--weathervane); opacity:0.82;
+  margin:0; text-align:center; width:100%;
 }
-.fan-login-btn{
-  background:var(--weathervane); color:#fff; font-size:13.5px; font-weight:700;
-  padding:13px 26px; border-radius:16px; text-decoration:none; white-space:nowrap;
+.story-desc strong{opacity:1;}
+
+.story-hint{
+  position:absolute; bottom:36px; left:0; right:0;
+  text-align:center;
+  font-size:12px; font-weight:700; letter-spacing:0.5px;
+  color:var(--berry-bush); opacity:0.75;
+  animation:hintPulse 1.8s ease-in-out infinite;
+}
+@keyframes hintPulse{ 0%,100%{opacity:.45;} 50%{opacity:.9;} }
+
+.story-cta{
+  width:100%;
+  display:flex; align-items:center; justify-content:center; flex-direction:column;
+  gap:14px;
+  margin-top:30px;
+  position:relative; z-index:40;
+}
+.story-cta-btn{
+  background:var(--weathervane); color:#fff; font-size:14.5px; font-weight:700;
+  padding:15px 44px; border-radius:18px; text-decoration:none;
   box-shadow:5px 5px 14px rgba(47,27,26,0.3); transition:all .2s ease;
 }
-.fan-login-btn:hover{background:var(--purple-kite);}
-.fan-signup-text{font-size:11.5px; line-height:1.4; color:var(--text-secondary);}
-.fan-signup-text a{color:var(--weathervane); font-weight:700; text-decoration:none;}
+.story-cta-btn:hover{background:var(--purple-kite);}
+.story-signup-text{font-size:12.5px; color:var(--text-secondary); text-align:center;}
+.story-signup-text a{color:var(--weathervane); font-weight:700; text-decoration:none;}
 
-/* Mobile: one full-bleed card at a time, next one peeking at the edge, swipe to browse */
-@media (max-width:900px){
-  body.fan-body{overflow:hidden;}
-  .fan-wrap{
-    justify-content:flex-start;
-    overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
-    padding:0 10vw 20px 6vw;
-    gap:14px;
-  }
-  .fan-wrap::-webkit-scrollbar{display:none;}
-  .fan-card{
-    width:82vw; height:100%;
-    scroll-snap-align:center;
-    transform:none !important; margin:0 !important;
-  }
-  .fan-wrap:hover .fan-card{transform:none !important;}
-  .fan-heading{font-size:30px;}
+@media (max-width:500px){
+  .story-heading{font-size:32px;}
+  .story-icon{max-width:140px; height:120px;}
 }
+
+/* small circular back-arrow, used on login/signup to return to index.html */
+.back-btn{
+  position:fixed; top:20px; left:20px;
+  width:42px; height:42px; border-radius:50%;
+  background:rgba(255,255,255,0.75);
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  border:1px solid rgba(122,64,77,0.15);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:4px 4px 12px rgba(122,64,77,0.18);
+  z-index:50; text-decoration:none; color:var(--berry-bush);
+  transition:all .2s ease;
+}
+.back-btn:hover{background:#fff; transform:translateX(-2px);}
+.back-btn svg{width:19px; height:19px;}
