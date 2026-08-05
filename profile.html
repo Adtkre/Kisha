@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Profile — Kisha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+
+<div id="app">
+  <div class="screen active" id="screen-profile">
+
+    <div class="glass profile-head">
+      <div class="profile-avatar" id="profAvatar">?</div>
+      <div class="profile-name" id="profName">—</div>
+      <div class="profile-email" id="profEmail">—</div>
+    </div>
+
+    <div class="clay acc-section">
+      <div class="acc-head">Personal <span style="color:var(--berry-bush); font-size:12px;">Edit</span></div>
+      <div class="acc-body">
+        <div class="field"><label>Age</label><input type="number" id="profAge"></div>
+        <div class="field"><label>Height (cm)</label><input type="number" id="profHeight"></div>
+        <div class="field mb-0"><label>Weight (kg)</label><input type="number" id="profWeight"></div>
+      </div>
+    </div>
+    <div class="clay acc-section">
+      <div class="acc-head">Cycle <span style="color:var(--berry-bush); font-size:12px;">Edit</span></div>
+      <div class="acc-body">
+        <div class="field"><label>Average Cycle Length (days)</label><input type="number" id="profCycleLen"></div>
+        <div class="field mb-0"><label>Average Period Length (days)</label><input type="number" id="profPeriodLen"></div>
+      </div>
+    </div>
+    <div class="clay acc-section">
+      <div class="acc-head">Lifestyle <span style="color:var(--berry-bush); font-size:12px;">Edit</span></div>
+      <div class="acc-body">
+        <div class="field mb-0"><label>Exercise Frequency</label><input type="text" id="profExercise"></div>
+      </div>
+    </div>
+    <div class="clay acc-section">
+      <div class="acc-head">Health <span style="color:var(--berry-bush); font-size:12px;">Edit</span></div>
+      <div class="acc-body">
+        <div class="field mb-0"><label>Conditions</label><input type="text" id="profConditions" placeholder="None specified"></div>
+      </div>
+    </div>
+    <button class="clay-btn btn-primary btn-block" id="profSaveBtn" onclick="saveProfile()">Save Changes</button>
+    <button class="clay-btn btn-secondary btn-block" style="margin-top:12px; color:var(--rose-red); border-color:var(--rose-red);" onclick="logout()">Logout</button>
+  </div>
+</div>
+
+<div id="bottomNav" class="show">
+  <div class="nav-item" data-target="dashboard" onclick="window.location.href='dashboard.html'">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9v11h14V9"/></svg>
+    Home
+  </div>
+  <div class="nav-item" data-target="calendar" onclick="window.location.href='calendar.html'">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
+    Calendar
+  </div>
+  <div class="nav-item" data-target="dailylog" onclick="window.location.href='dailylog.html'">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V9z"/><path d="M14 3v6h6M9 13h6M9 17h6"/></svg>
+    Log
+  </div>
+  <div class="nav-item" data-target="analytics" onclick="window.location.href='analytics.html'">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M6 21V10M12 21V4M18 21v-7"/></svg>
+    Insights
+  </div>
+  <div class="nav-item" data-target="profile" onclick="window.location.href='profile.html'">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+    Profile
+  </div>
+</div>
+
+
+<div class="sheet-overlay" id="sheetOverlay" onclick="if(event.target===this) closeSheet()">
+  <div class="glass sheet" id="sheetContent"></div>
+</div>
+<div id="toast" style="position:fixed; top:20px; left:50%; transform:translateX(-50%) translateY(-100px); background:var(--weathervane); color:#F0D2DE; padding:12px 22px; border-radius:16px; font-size:13.5px; font-weight:600; z-index:200; transition:transform .35s ease; box-shadow:0 8px 24px rgba(0,0,0,0.25);"></div>
+
+<script src="js/main.js"></script>
+<script src="js/auth.js"></script>
+<script>
+highlightNav('profile');
+
+function fillProfile(user){
+  document.getElementById('profAvatar').textContent = initialsOf(user.name);
+  document.getElementById('profName').textContent = user.name || '—';
+  document.getElementById('profEmail').textContent = user.email || '—';
+  document.getElementById('profAge').value = user.age || '';
+  document.getElementById('profHeight').value = user.height || '';
+  document.getElementById('profWeight').value = user.weight || '';
+  document.getElementById('profCycleLen').value = user.avgCycleLength || 28;
+  document.getElementById('profPeriodLen').value = user.avgPeriodLength || 5;
+  document.getElementById('profExercise').value = user.exerciseFrequency || '';
+  document.getElementById('profConditions').value = user.conditions || '';
+}
+
+async function saveProfile(){
+  const btn = document.getElementById('profSaveBtn');
+  btn.textContent = 'Saving...';
+  btn.disabled = true;
+  const payload = {
+    age: document.getElementById('profAge').value || null,
+    height: document.getElementById('profHeight').value || null,
+    weight: document.getElementById('profWeight').value || null,
+    avgCycleLength: Number(document.getElementById('profCycleLen').value) || 28,
+    avgPeriodLength: Number(document.getElementById('profPeriodLen').value) || 5,
+    exerciseFrequency: document.getElementById('profExercise').value,
+    conditions: document.getElementById('profConditions').value
+  };
+  try{
+    const res = await authFetch('/api/me', { method:'PUT', body: JSON.stringify(payload) });
+    const data = await res.json();
+    localStorage.setItem('kisha_user', JSON.stringify(data.user));
+    toast('Profile saved ✓');
+  }catch(e){
+    toast('Could not save — is the server running?');
+  }
+  btn.textContent = 'Save Changes';
+  btn.disabled = false;
+}
+
+requireAuth(fillProfile);
+</script>
+</body>
+</html>

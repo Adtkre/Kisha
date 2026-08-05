@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Dashboard — Kisha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+
+<div id="app">
+  <div class="screen active" id="screen-dashboard">
+
+    <div class="dash-header">
+      <div>
+        <div class="greeting" id="dashGreeting">Good Morning,<br>there 🌸</div>
+        <div class="greeting-date" id="dashDate"></div>
+      </div>
+      <div class="header-right">
+        <button class="quick-log-btn" onclick="openSheet('addlog')">+ Quick Log</button>
+        <div class="avatar" id="dashAvatar">?</div>
+      </div>
+    </div>
+
+    <div class="clay cycle-card">
+      <div class="ring-wrap">
+        <svg width="150" height="150" viewBox="0 0 150 150">
+          <circle cx="75" cy="75" r="62" fill="none" stroke="rgba(122,64,77,0.12)" stroke-width="12"/>
+          <circle id="cycleRing" cx="75" cy="75" r="62" fill="none" stroke="url(#grad1)" stroke-width="12" stroke-linecap="round"
+            stroke-dasharray="389.6" stroke-dashoffset="389.6" transform="rotate(-90 75 75)"/>
+          <defs><linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#D89FB6"/><stop offset="100%" stop-color="#7A404D"/>
+          </linearGradient></defs>
+        </svg>
+        <div class="ring-center"><div class="ring-day" id="ringDay">—</div><div class="ring-label" id="ringLabel">NO DATA YET</div></div>
+      </div>
+      <div class="cycle-meta">
+        <div><div class="meta-val" id="metaLastPeriod">—</div><div class="meta-label">Last Period</div></div>
+        <div><div class="meta-val" id="metaAvgCycle">—</div><div class="meta-label">Avg Cycle</div></div>
+        <div><div class="meta-val" id="metaPhase">—</div><div class="meta-label">Phase</div></div>
+      </div>
+      <div class="bloom">🌸</div>
+    </div>
+
+    <div class="glass next-period-card">
+      <div>
+        <div class="countdown-label">NEXT PERIOD EXPECTED</div>
+        <div class="countdown-num" id="countdownNum">—</div>
+        <div class="countdown-label" id="countdownDate"></div>
+      </div>
+      <button class="clay-btn btn-primary" style="padding:12px 18px; font-size:13px;" onclick="window.location.href='calendar.html'">Open Calendar</button>
+    </div>
+  </div>
+</div>
+
+<div id="bottomNav" class="show">
+  <div class="nav-item" data-target="dashboard" onclick="window.location.href='dashboard.html'">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9v11h14V9"/></svg>
+    Home
+  </div>
+  <div class="nav-item" data-target="calendar" onclick="window.location.href='calendar.html'">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
+    Calendar
+  </div>
+  <div class="nav-item" data-target="dailylog" onclick="window.location.href='dailylog.html'">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V9z"/><path d="M14 3v6h6M9 13h6M9 17h6"/></svg>
+    Log
+  </div>
+  <div class="nav-item" data-target="analytics" onclick="window.location.href='analytics.html'">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M6 21V10M12 21V4M18 21v-7"/></svg>
+    Insights
+  </div>
+  <div class="nav-item" data-target="profile" onclick="window.location.href='profile.html'">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+    Profile
+  </div>
+</div>
+
+<div class="sheet-overlay" id="sheetOverlay" onclick="if(event.target===this) closeSheet()">
+  <div class="glass sheet" id="sheetContent"></div>
+</div>
+<div id="toast" style="position:fixed; top:20px; left:50%; transform:translateX(-50%) translateY(-100px); background:var(--weathervane); color:#F0D2DE; padding:12px 22px; border-radius:16px; font-size:13.5px; font-weight:600; z-index:200; transition:transform .35s ease; box-shadow:0 8px 24px rgba(0,0,0,0.25);"></div>
+
+<script src="js/main.js"></script>
+<script src="js/auth.js"></script>
+<script>
+highlightNav('dashboard');
+
+document.getElementById('dashDate').textContent = new Date().toLocaleDateString('en-US', { weekday:'long', day:'2-digit', month:'long', year:'numeric' });
+
+function phaseFor(dayNum, avgCycle){
+  const period = Math.min(6, Math.round(avgCycle*0.18));
+  const ovulationCenter = Math.round(avgCycle/2);
+  if(dayNum <= period) return 'Menstrual';
+  if(dayNum <= ovulationCenter - 2) return 'Follicular';
+  if(dayNum <= ovulationCenter + 2) return 'Ovulation';
+  return 'Luteal';
+}
+
+async function loadDashboard(user){
+  const firstName = (user.name || 'there').split(' ')[0];
+  const hour = new Date().getHours();
+  const greetWord = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
+  document.getElementById('dashGreeting').innerHTML = greetWord + ',<br>' + firstName + ' 🌸';
+  document.getElementById('dashAvatar').textContent = initialsOf(user.name);
+
+  const avgCycle = user.avgCycleLength || 28;
+
+  try{
+    const res = await authFetch('/api/cycles');
+    const data = await res.json();
+    const cycles = (data.cycles || []).sort((a,b)=> a.startDate.localeCompare(b.startDate));
+    const ongoing = cycles.find(c => !c.endDate);
+    const completed = cycles.filter(c => c.endDate);
+    const lastCycle = cycles[cycles.length - 1];
+
+    document.getElementById('metaAvgCycle').textContent = avgCycle + ' days';
+
+    if(!lastCycle){
+      document.getElementById('ringDay').textContent = '—';
+      document.getElementById('ringLabel').textContent = 'NO DATA YET';
+      document.getElementById('metaLastPeriod').textContent = '—';
+      document.getElementById('metaPhase').textContent = '—';
+      document.getElementById('countdownNum').textContent = 'Log your first period';
+      document.getElementById('countdownDate').textContent = 'to see a prediction here';
+      return;
+    }
+
+    const startDate = new Date(lastCycle.startDate + 'T00:00:00');
+    document.getElementById('metaLastPeriod').textContent = startDate.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+
+    const today = new Date(); today.setHours(0,0,0,0);
+    const dayNum = Math.max(1, Math.floor((today - startDate) / 86400000) + 1);
+    const phase = phaseFor(dayNum, avgCycle);
+
+    document.getElementById('ringDay').textContent = ongoing ? ('Day ' + dayNum) : ('Day ' + dayNum);
+    document.getElementById('ringLabel').textContent = phase.toUpperCase();
+    document.getElementById('metaPhase').textContent = phase;
+
+    const pct = Math.min(1, dayNum / avgCycle);
+    const circumference = 389.6;
+    document.getElementById('cycleRing').style.strokeDashoffset = String(circumference * (1 - pct));
+
+    const nextPeriod = new Date(startDate.getTime() + avgCycle * 86400000);
+    const daysUntil = Math.round((nextPeriod - today) / 86400000);
+    if(ongoing){
+      document.getElementById('countdownNum').textContent = 'Period in progress';
+      document.getElementById('countdownDate').textContent = 'started ' + startDate.toLocaleDateString('en-US',{month:'short', day:'numeric'});
+    } else if(daysUntil <= 0){
+      document.getElementById('countdownNum').textContent = 'Any day now';
+      document.getElementById('countdownDate').textContent = nextPeriod.toLocaleDateString('en-US', { day:'2-digit', month:'long', year:'numeric' });
+    } else {
+      document.getElementById('countdownNum').textContent = daysUntil + (daysUntil===1 ? ' Day' : ' Days');
+      document.getElementById('countdownDate').textContent = nextPeriod.toLocaleDateString('en-US', { day:'2-digit', month:'long', year:'numeric' });
+    }
+  }catch(e){
+    document.getElementById('ringLabel').textContent = 'OFFLINE';
+  }
+}
+
+function onCycleChanged(){ loadDashboard(getStoredUser() || {}); }
+
+requireAuth(loadDashboard);
+</script>
+</body>
+</html>

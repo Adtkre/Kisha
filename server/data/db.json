@@ -1,0 +1,41 @@
+{
+  "users": [
+    {
+      "id": "57df7627-827f-4880-b39e-37145aabf2b9",
+      "name": "catpin",
+      "email": "catpin@gmail.com",
+      "passwordHash": "$2a$10$ITctlULWTHcyLAILrlkaS.A0IledRSUBPyHmuCtSFwQ1Odl78F0mu",
+      "createdAt": "2026-08-05T18:30:09.165Z",
+      "age": "20",
+      "height": "152",
+      "weight": "56",
+      "avgCycleLength": 28,
+      "avgPeriodLength": 5,
+      "exerciseFrequency": "Rarely",
+      "conditions": ""
+    }
+  ],
+  "cycles": [
+    {
+      "id": "7784e7ef-23cd-4923-a874-f383520dd5ca",
+      "userId": "57df7627-827f-4880-b39e-37145aabf2b9",
+      "startDate": "2026-08-05",
+      "endDate": "2026-08-05"
+    }
+  ],
+  "logs": [
+    {
+      "id": "6c88ea2d-8bcc-4243-aed1-6d9618348d56",
+      "userId": "57df7627-827f-4880-b39e-37145aabf2b9",
+      "date": "2026-08-05",
+      "mood": "🙂",
+      "flow": "Light",
+      "sleep": 7,
+      "water": 6,
+      "exercise": "None",
+      "stress": "Moderate",
+      "symptoms": [],
+      "notes": ""
+    }
+  ]
+}
