@@ -94,40 +94,13 @@ highlightNav('analytics');
 
 async function loadAnalytics(){
   try{
-    const res = await authFetch('/api/cycles');
-    const data = await res.json();
-    const cycles = (data.cycles || []).sort((a,b)=> a.startDate.localeCompare(b.startDate));
+    const res = await authFetch('/api/cycles-summary');
+    const summary = await res.json();
 
-    document.getElementById('statCyclesLogged').textContent = cycles.length || '0';
-
-    // cycle length = gap between consecutive period start dates
-    const gaps = [];
-    for(let i=1;i<cycles.length;i++){
-      const prev = new Date(cycles[i-1].startDate + 'T00:00:00');
-      const cur = new Date(cycles[i].startDate + 'T00:00:00');
-      gaps.push(Math.round((cur - prev) / 86400000));
-    }
-    if(gaps.length){
-      const avgCycle = gaps.reduce((a,b)=>a+b,0) / gaps.length;
-      document.getElementById('statAvgCycle').textContent = avgCycle.toFixed(1);
-      document.getElementById('statLongestCycle').textContent = Math.max(...gaps);
-    } else {
-      document.getElementById('statAvgCycle').textContent = '—';
-      document.getElementById('statLongestCycle').textContent = '—';
-    }
-
-    // period length = endDate - startDate for completed cycles
-    const lengths = cycles.filter(c=>c.endDate).map(c=>{
-      const s = new Date(c.startDate + 'T00:00:00');
-      const e = new Date(c.endDate + 'T00:00:00');
-      return Math.round((e - s) / 86400000) + 1;
-    });
-    if(lengths.length){
-      const avgPeriod = lengths.reduce((a,b)=>a+b,0) / lengths.length;
-      document.getElementById('statAvgPeriod').textContent = avgPeriod.toFixed(1);
-    } else {
-      document.getElementById('statAvgPeriod').textContent = '—';
-    }
+    document.getElementById('statCyclesLogged').textContent = summary.cyclesLogged || '0';
+    document.getElementById('statAvgCycle').textContent = summary.cyclesLogged >= 2 ? summary.avgCycleLength : '—';
+    document.getElementById('statLongestCycle').textContent = summary.longestCycle != null ? summary.longestCycle : '—';
+    document.getElementById('statAvgPeriod').textContent = summary.cyclesLogged ? summary.avgPeriodLength : '—';
   }catch(e){ /* offline: leave placeholders */ }
 }
 

@@ -11,10 +11,17 @@ This is no longer a demo. Signup/login talk to a real backend:
 
 ## Run it
 
-You need [Node.js](https://nodejs.org) installed (v18+ recommended).
+You need [Node.js](https://nodejs.org) (v18+) **and PostgreSQL** installed.
+
+**First time setup** — see `POSTGRES_SETUP.md` for the full step-by-step
+(installing Postgres, creating the database, running the schema, setting
+up `.env`). Short version:
 
 ```
 cd server
+cp .env.example .env      # then edit .env with your DB password + a JWT secret
+psql -U postgres -c "CREATE DATABASE kisha;"
+psql -U postgres -d kisha -f schema.sql
 npm install
 npm start
 ```
@@ -25,8 +32,8 @@ That starts everything — API **and** the website — on one server. Open:
 http://localhost:4000
 ```
 
-You'll land on the intro story (`index.html`). Create a real account from
-there; it will actually be saved.
+Data now lives in a real Postgres database, so it survives server
+restarts, redeploys, and crashes — unlike the old JSON-file version.
 
 ## What's real now
 
@@ -51,12 +58,14 @@ there; it will actually be saved.
 
 ## Where the data lives
 
-`server/data/db.json` — a plain JSON file acting as the database, plus
-`server/data/secret.txt` holding the auto-generated JWT signing secret.
-Delete `db.json` any time to wipe all accounts and start fresh. For a real
-production deployment you'd swap this file for Postgres/MongoDB/etc. —
-the route logic in `server/server.js` is written so that swap only touches
-the `readDB()`/`writeDB()` helpers.
+Real PostgreSQL — `users`, `period_days`, and `logs` tables, defined in
+`server/schema.sql`. Connection details live in `server/.env` (see
+`.env.example` and `POSTGRES_SETUP.md`). Restarting the server, your
+computer, or redeploying no longer wipes anything.
+
+The older single-file JSON version is kept as
+`server/server-jsonfile-legacy.js` for reference only — it is not used
+unless you run it directly.
 
 ## Folder structure
 
@@ -66,10 +75,13 @@ kisha/
 │   dashboard.html, calendar.html, dailylog.html,
 │   analytics.html, profile.html, settings.html
 ├── css/style.css
-├── js/main.js        shared UI behavior (sheets, selectors, calendar render)
-├── js/auth.js         token storage + authFetch + requireAuth guard
+├── js/main.js         shared UI behavior (sheets, selectors, calendar render)
+├── js/auth.js          token storage + authFetch + requireAuth guard
+├── POSTGRES_SETUP.md   step-by-step Postgres setup guide
 └── server/
-    ├── server.js       Express API + static file server
-    ├── package.json
-    └── data/           created automatically on first run
+    ├── server.js               Express API (Postgres) + static file server
+    ├── server-jsonfile-legacy.js   old JSON-file version, kept for reference
+    ├── schema.sql               table definitions
+    ├── .env.example              config template — copy to .env
+    └── package.json
 ```

@@ -38,72 +38,131 @@ function toast(msg){
   toastTimer = setTimeout(()=>{ t.style.transform='translateX(-50%) translateY(-100px)'; }, 2200);
 }
 
-/* ============ Bottom Sheets (used on dashboard.html / calendar.html) ============ */
-async function openSheet(type){
+/* ============ Bottom Sheets (used on dashboard.html / calendar.html) ============
+   Every sheet acts on a specific date (defaults to today when
+   opened from the Dashboard's Quick Log button). */
+function localDateString(date){
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+function todayISO(){ return localDateString(new Date()); }
+function formatDateLabel(dateStr){
+  const [year, month, day] = dateStr.split('-').map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString('en-US', { day:'numeric', month:'long' });
+}
+
+async function openSheet(type, dateStr){
   const content = document.getElementById('sheetContent');
   if(!content) return;
-  let html = '';
-  if(type==='addlog'){
-    const dateLabel = new Date().toLocaleDateString('en-US', { day:'numeric', month:'long' });
-    let ongoing = null;
-    try{
-      const res = await authFetch('/api/cycles');
-      const data = await res.json();
-      ongoing = data.cycles.find(c => !c.endDate) || null;
-    }catch(e){ /* offline fallback: assume no active period */ }
+  dateStr = dateStr || todayISO();
+  if(dateStr > todayISO()){ return; } // future dates are never actionable
 
-    html = `<div class="sheet-handle"></div><div class="sheet-title">${dateLabel}</div>`;
-    if(ongoing){
-      html += `<div class="sheet-option danger" onclick="closeSheet(); openDialog('end')">🛑 End Period</div>`;
+  if(type==='addlog'){
+    let marked = false;
+    let periodEnded = false;
+    try{
+      const [periodRes, endRes] = await Promise.all([
+        authFetch('/api/period-days'),
+        authFetch('/api/period-end')
+      ]);
+      const periodData = await periodRes.json();
+      const endData = await endRes.json();
+      marked = (periodData.dates || []).includes(dateStr);
+      periodEnded = endData.date === dateStr;
+    }catch(e){ /* offline fallback: assume unmarked */ }
+
+    let html = `<div class="sheet-handle"></div><div class="sheet-title">${formatDateLabel(dateStr)}</div>`;
+    if(marked){
+      html += `<div class="sheet-option danger" onclick="closeSheet(); openDialog('remove', '${dateStr}')">🩸 Remove Period Mark</div>`;
     } else {
-      html += `<div class="sheet-option" onclick="closeSheet(); openDialog('start')">🩸 Start Period</div>`;
+      html += `<div class="sheet-option" onclick="closeSheet(); openDialog('start', '${dateStr}')">🩸 Mark as Period Day</div>`;
     }
-    html += `<div class="sheet-option" onclick="closeSheet(); window.location.href='dailylog.html'">📝 Add Daily Log</div>
+    if(periodEnded){
+      html += `<div class="sheet-option danger" onclick="closeSheet(); openDialog('remove-end', '${dateStr}')">✅ Remove End of Period Mark</div>`;
+    } else {
+      html += `<div class="sheet-option" onclick="closeSheet(); openDialog('end', '${dateStr}')">✅ Mark End of Period</div>`;
+    }
+    html += `<div class="sheet-option" onclick="closeSheet(); window.location.href='dailylog.html?date=${dateStr}'">📝 Add Daily Log</div>
       <div class="sheet-option danger" onclick="closeSheet()">Cancel</div>`;
+    content.innerHTML = html;
   }
-  content.innerHTML = html;
   document.getElementById('sheetOverlay').classList.add('show');
 }
 function closeSheet(){
   const ov = document.getElementById('sheetOverlay');
   if(ov) ov.classList.remove('show');
 }
-async function openDialog(type){
+function openDialog(type, dateStr){
   const content = document.getElementById('sheetContent');
+  const label = formatDateLabel(dateStr);
   let html = '';
   if(type==='start'){
-    html = `<div class="dialog-box"><h3>Start your period today?</h3><p>We'll begin tracking this cycle from today.</p>
+    html = `<div class="dialog-box"><h3>Mark ${label} as a period day?</h3><p>You can remove this any time by tapping the date again.</p>
       <div class="dialog-actions">
         <button class="clay-btn btn-secondary" style="flex:1;" onclick="closeSheet()">Cancel</button>
-        <button class="clay-btn btn-primary" style="flex:1;" onclick="confirmStartPeriod()">Start</button>
+        <button class="clay-btn btn-primary" style="flex:1;" onclick="confirmMarkPeriod('${dateStr}')">Mark</button>
+      </div></div>`;
+  } else if(type==='remove'){
+    html = `<div class="dialog-box"><h3>Remove period mark?</h3><p>${label} will no longer be counted as a period day.</p>
+      <div class="dialog-actions">
+        <button class="clay-btn btn-secondary" style="flex:1;" onclick="closeSheet()">Cancel</button>
+        <button class="clay-btn btn-primary" style="flex:1;" onclick="confirmUnmarkPeriod('${dateStr}')">Remove</button>
       </div></div>`;
   } else if(type==='end'){
-    html = `<div class="dialog-box"><h3>Period ended today?</h3><p>We'll close out this cycle and add it to your history.</p>
+    html = `<div class="dialog-box"><h3>Mark ${label} as the end of your period?</h3><p>This records the last day of your period for cycle tracking.</p>
       <div class="dialog-actions">
         <button class="clay-btn btn-secondary" style="flex:1;" onclick="closeSheet()">Cancel</button>
-        <button class="clay-btn btn-primary" style="flex:1;" onclick="confirmEndPeriod()">End</button>
+        <button class="clay-btn btn-primary" style="flex:1;" onclick="confirmMarkEndPeriod('${dateStr}')">Mark End</button>
+      </div></div>`;
+  } else if(type==='remove-end'){
+    html = `<div class="dialog-box"><h3>Remove end-of-period mark?</h3><p>${label} will no longer be treated as the end of your period.</p>
+      <div class="dialog-actions">
+        <button class="clay-btn btn-secondary" style="flex:1;" onclick="closeSheet()">Cancel</button>
+        <button class="clay-btn btn-primary" style="flex:1;" onclick="confirmUnmarkEndPeriod('${dateStr}')">Remove</button>
       </div></div>`;
   }
   content.innerHTML = html;
   document.getElementById('sheetOverlay').classList.add('show');
 }
-async function confirmStartPeriod(){
+async function afterCycleWrite(successMsg){
+  closeSheet();
+  toast(successMsg);
+  if(typeof onCycleChanged === 'function') onCycleChanged();
+  if(typeof buildCalendar === 'function' && document.getElementById('calGrid')) buildCalendar();
+}
+async function confirmMarkPeriod(dateStr){
   try{
-    await authFetch('/api/cycles/start', { method:'POST', body: JSON.stringify({}) });
-    closeSheet();
-    toast('Period started 🩸');
-    if(typeof onCycleChanged === 'function') onCycleChanged();
+    await authFetch('/api/period-days', { method:'POST', body: JSON.stringify({ date: dateStr }) });
+    afterCycleWrite('Marked as period day 🩸');
   }catch(e){
     closeSheet();
     toast('Could not save — is the server running?');
   }
 }
-async function confirmEndPeriod(){
+async function confirmUnmarkPeriod(dateStr){
   try{
-    await authFetch('/api/cycles/end', { method:'POST', body: JSON.stringify({}) });
+    await authFetch('/api/period-days/' + dateStr, { method:'DELETE' });
+    afterCycleWrite('Mark removed ✓');
+  }catch(e){
     closeSheet();
-    toast('Period ended ✓');
-    if(typeof onCycleChanged === 'function') onCycleChanged();
+    toast('Could not save — is the server running?');
+  }
+}
+async function confirmMarkEndPeriod(dateStr){
+  try{
+    await authFetch('/api/period-end', { method:'POST', body: JSON.stringify({ date: dateStr }) });
+    afterCycleWrite('End of period saved ✓');
+  }catch(e){
+    closeSheet();
+    toast('Could not save — is the server running?');
+  }
+}
+async function confirmUnmarkEndPeriod(dateStr){
+  try{
+    await authFetch('/api/period-end/' + dateStr, { method:'DELETE' });
+    afterCycleWrite('End mark removed ✓');
   }catch(e){
     closeSheet();
     toast('Could not save — is the server running?');
@@ -124,38 +183,48 @@ async function buildCalendar(){
   const monthStr = year + '-' + String(month+1).padStart(2,'0');
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month+1, 0).getDate();
-  const todayDate = now.getDate();
+  const todayStr = todayISO();
   const monthLabelEl = document.getElementById('calMonthLabel');
   if(monthLabelEl) monthLabelEl.textContent = now.toLocaleDateString('en-US',{month:'long', year:'numeric'});
 
-  let periodDaySet = new Set();
-  let logDaySet = new Set();
+  let periodDateSet = new Set();
+  let periodEndSet = new Set();
+  let logDateSet = new Set();
   try{
-    const cyclesRes = await authFetch('/api/cycles');
-    const cyclesData = await cyclesRes.json();
-    (cyclesData.cycles || []).forEach(c=>{
-      const start = new Date(c.startDate + 'T00:00:00');
-      const end = c.endDate ? new Date(c.endDate + 'T00:00:00') : new Date();
-      for(let d = new Date(start); d <= end; d.setDate(d.getDate()+1)){
-        if(d.getFullYear()===year && d.getMonth()===month) periodDaySet.add(d.getDate());
-      }
-    });
-    const logsRes = await authFetch('/api/logs?month=' + monthStr);
+    const [pdRes, endRes, logsRes] = await Promise.all([
+      authFetch('/api/period-days'),
+      authFetch('/api/period-end'),
+      authFetch('/api/logs?month=' + monthStr)
+    ]);
+    const pdData = await pdRes.json();
+    const endData = await endRes.json();
     const logsData = await logsRes.json();
-    (logsData.logs || []).forEach(l => logDaySet.add(Number(l.date.slice(8,10))));
+    (pdData.dates || []).forEach(d => periodDateSet.add(d));
+    if (endData.date) periodEndSet.add(endData.date);
+    (logsData.logs || []).forEach(l => logDateSet.add(l.date));
   }catch(e){ /* offline fallback: render empty calendar */ }
 
   for(let i=0;i<firstDay;i++){
     const el = document.createElement('div'); el.className='cal-cell empty'; grid.appendChild(el);
   }
   for(let d=1; d<=daysInMonth; d++){
+    const dateStr = monthStr + '-' + String(d).padStart(2,'0');
     const el = document.createElement('div'); el.className='cal-cell';
     el.textContent = d;
-    if(periodDaySet.has(d)) el.classList.add('period');
-    if(d===todayDate) el.classList.add('today');
-    if(logDaySet.has(d)){ const dot=document.createElement('div'); dot.className='dot'; if(periodDaySet.has(d)) dot.style.background='#fff'; el.appendChild(dot); }
-    el.onclick = ()=>openSheet('addlog');
+    const isFuture = dateStr > todayStr;
+    if(periodDateSet.has(dateStr)) el.classList.add('period');
+    if(periodEndSet.has(dateStr)) el.classList.add('period-end');
+    if(dateStr===todayStr) el.classList.add('today');
+    if(logDateSet.has(dateStr)){ const dot=document.createElement('div'); dot.className='dot'; if(periodDateSet.has(dateStr) || periodEndSet.has(dateStr)) dot.style.background='#fff'; el.appendChild(dot); }
+    if(isFuture){
+      el.classList.add('future');
+    } else {
+      el.onclick = ()=>openSheet('addlog', dateStr);
+    }
     grid.appendChild(el);
   }
 }
-if(document.getElementById('calGrid')) buildCalendar();
+/* buildCalendar() is invoked explicitly by calendar.html
+   after both main.js and auth.js have loaded — calling it
+   here at module-load time would race ahead of authFetch
+   being defined. */

@@ -1,40 +1,71 @@
 /* ============================================================
-   Kisha backend
-   - Real signup/login: passwords hashed with bcrypt, never
-     stored or returned in plain text.
+   Kisha backend — PostgreSQL edition
+   - Real signup/login: passwords hashed with bcrypt.
    - Sessions are JWTs (30 day expiry) sent as
      Authorization: Bearer <token>.
-   - Data (users, cycles, daily logs) is persisted to a JSON
-     file on disk at server/data/db.json — swap this file's
-     read/write helpers for a real database later without
-     touching the route logic.
+   - Data lives in a real Postgres database (see schema.sql)
+     instead of a JSON file — it survives restarts, redeploys,
+     and multiple server instances.
    ============================================================ */
+require('dotenv').config();
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
-const fs = require('fs');
 const path = require('path');
+const { Pool } = require('pg');
 
-const DATA_DIR = path.join(__dirname, 'data');
-const DB_FILE = path.join(DATA_DIR, 'db.json');
-const SECRET_FILE = path.join(DATA_DIR, 'secret.txt');
-
-if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-if (!fs.existsSync(DB_FILE)) {
-  fs.writeFileSync(DB_FILE, JSON.stringify({ users: [], cycles: [], logs: [] }, null, 2));
+if (!process.env.DATABASE_URL) {
+  console.error('Missing DATABASE_URL. Copy .env.example to .env and fill it in.');
+  process.exit(1);
 }
-if (!fs.existsSync(SECRET_FILE)) {
-  fs.writeFileSync(SECRET_FILE, crypto.randomBytes(48).toString('hex'));
-}
-const SECRET = fs.readFileSync(SECRET_FILE, 'utf8').trim();
 
-function readDB() { return JSON.parse(fs.readFileSync(DB_FILE, 'utf8')); }
-function writeDB(db) { fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2)); }
-function todayStr() { return new Date().toISOString().slice(0, 10); }
-function publicUser(u) {
-  const { passwordHash, ...rest } = u;
-  return rest;
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+
+const SECRET = process.env.JWT_SECRET;
+if (!SECRET) {
+  console.error('Missing JWT_SECRET. Copy .env.example to .env and fill it in.');
+  process.exit(1);
+}
+
+function localDateStr(d) {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+function todayStr() { return localDateStr(new Date()); }
+function toDateStr(d) { return localDateStr(d); }
+
+/* group a sorted list of unique 'YYYY-MM-DD' strings into consecutive-day runs */
+function groupPeriodDays(sortedDates) {
+  const groups = [];
+  let start = null, end = null;
+  for (const d of sortedDates) {
+    if (start === null) { start = d; end = d; continue; }
+    const prev = new Date(end + 'T00:00:00');
+    const cur = new Date(d + 'T00:00:00');
+    const diff = Math.round((cur - prev) / 86400000);
+    if (diff === 1) { end = d; }
+    else { groups.push({ startDate: start, endDate: end }); start = d; end = d; }
+  }
+  if (start !== null) groups.push({ startDate: start, endDate: end });
+  return groups;
+}
+
+function publicUser(row) {
+  return {
+    id: row.id,
+    name: row.name,
+    email: row.email,
+    createdAt: row.created_at,
+    age: row.age,
+    height: row.height,
+    weight: row.weight,
+    avgCycleLength: row.avg_cycle_length,
+    avgPeriodLength: row.avg_period_length,
+    exerciseFrequency: row.exercise_frequency,
+    conditions: row.conditions
+  };
 }
 
 const app = express();
@@ -55,122 +86,271 @@ function requireAuth(req, res, next) {
 
 /* ================= AUTH ================= */
 
-app.post('/api/auth/signup', (req, res) => {
-  const { name, email, password } = req.body || {};
-  if (!name || !email || !password) {
-    return res.status(400).json({ error: 'Name, email and password are all required' });
+app.post('/api/auth/signup', async (req, res) => {
+  try {
+    const { name, email, password } = req.body || {};
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: 'Name, email and password are all required' });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    }
+    const normalizedEmail = String(email).trim().toLowerCase();
+
+    const existing = await pool.query('SELECT id FROM users WHERE email = $1', [normalizedEmail]);
+    if (existing.rows.length) {
+      return res.status(409).json({ error: 'An account with this email already exists' });
+    }
+
+    const passwordHash = bcrypt.hashSync(password, 10);
+    const result = await pool.query(
+      `INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3) RETURNING *`,
+      [String(name).trim(), normalizedEmail, passwordHash]
+    );
+    const user = result.rows[0];
+    const token = jwt.sign({ uid: user.id }, SECRET, { expiresIn: '30d' });
+    res.json({ token, user: publicUser(user) });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Something went wrong, please try again' });
   }
-  if (password.length < 6) {
-    return res.status(400).json({ error: 'Password must be at least 6 characters' });
+});
+
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body || {};
+    const normalizedEmail = String(email || '').trim().toLowerCase();
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [normalizedEmail]);
+    const user = result.rows[0];
+    if (!user || !bcrypt.compareSync(String(password || ''), user.password_hash)) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+    const token = jwt.sign({ uid: user.id }, SECRET, { expiresIn: '30d' });
+    res.json({ token, user: publicUser(user) });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Something went wrong, please try again' });
   }
-  const db = readDB();
-  const normalizedEmail = String(email).trim().toLowerCase();
-  if (db.users.find(u => u.email === normalizedEmail)) {
-    return res.status(409).json({ error: 'An account with this email already exists' });
-  }
-  const user = {
-    id: crypto.randomUUID(),
-    name: String(name).trim(),
-    email: normalizedEmail,
-    passwordHash: bcrypt.hashSync(password, 10),
-    createdAt: new Date().toISOString(),
-    age: null, height: null, weight: null,
-    avgCycleLength: 28, avgPeriodLength: 5,
-    exerciseFrequency: null, conditions: ''
+});
+
+app.get('/api/me', requireAuth, async (req, res) => {
+  const result = await pool.query('SELECT * FROM users WHERE id = $1', [req.userId]);
+  if (!result.rows.length) return res.status(404).json({ error: 'User not found' });
+  res.json({ user: publicUser(result.rows[0]) });
+});
+
+app.put('/api/me', requireAuth, async (req, res) => {
+  const editable = {
+    name: req.body.name,
+    age: req.body.age,
+    height: req.body.height,
+    weight: req.body.weight,
+    avg_cycle_length: req.body.avgCycleLength,
+    avg_period_length: req.body.avgPeriodLength,
+    exercise_frequency: req.body.exerciseFrequency,
+    conditions: req.body.conditions
   };
-  db.users.push(user);
-  writeDB(db);
-  const token = jwt.sign({ uid: user.id }, SECRET, { expiresIn: '30d' });
-  res.json({ token, user: publicUser(user) });
-});
-
-app.post('/api/auth/login', (req, res) => {
-  const { email, password } = req.body || {};
-  const db = readDB();
-  const normalizedEmail = String(email || '').trim().toLowerCase();
-  const user = db.users.find(u => u.email === normalizedEmail);
-  if (!user || !bcrypt.compareSync(String(password || ''), user.passwordHash)) {
-    return res.status(401).json({ error: 'Invalid email or password' });
+  const sets = [];
+  const values = [];
+  let i = 1;
+  for (const [col, val] of Object.entries(editable)) {
+    if (val !== undefined) { sets.push(`${col} = $${i++}`); values.push(val === '' ? null : val); }
   }
-  const token = jwt.sign({ uid: user.id }, SECRET, { expiresIn: '30d' });
-  res.json({ token, user: publicUser(user) });
+  if (!sets.length) {
+    const cur = await pool.query('SELECT * FROM users WHERE id = $1', [req.userId]);
+    return res.json({ user: publicUser(cur.rows[0]) });
+  }
+  values.push(req.userId);
+  const result = await pool.query(
+    `UPDATE users SET ${sets.join(', ')} WHERE id = $${i} RETURNING *`,
+    values
+  );
+  res.json({ user: publicUser(result.rows[0]) });
 });
 
-app.get('/api/me', requireAuth, (req, res) => {
-  const db = readDB();
-  const user = db.users.find(u => u.id === req.userId);
-  if (!user) return res.status(404).json({ error: 'User not found' });
-  res.json({ user: publicUser(user) });
+/* ================= PERIOD DAYS (per-day marking) ================= */
+
+app.get('/api/period-days', requireAuth, async (req, res) => {
+  const result = await pool.query(
+    'SELECT date FROM period_days WHERE user_id = $1 ORDER BY date ASC',
+    [req.userId]
+  );
+  res.json({ dates: result.rows.map(r => toDateStr(new Date(r.date))) });
 });
 
-app.put('/api/me', requireAuth, (req, res) => {
-  const db = readDB();
-  const user = db.users.find(u => u.id === req.userId);
-  if (!user) return res.status(404).json({ error: 'User not found' });
-  const editable = ['name', 'age', 'height', 'weight', 'avgCycleLength', 'avgPeriodLength', 'exerciseFrequency', 'conditions'];
-  editable.forEach(f => { if (req.body[f] !== undefined) user[f] = req.body[f]; });
-  writeDB(db);
-  res.json({ user: publicUser(user) });
+app.post('/api/period-days', requireAuth, async (req, res) => {
+  const { date } = req.body || {};
+  if (!date) return res.status(400).json({ error: 'date is required' });
+  if (date > todayStr()) return res.status(400).json({ error: "You can't mark a future date" });
+  await pool.query(
+    `INSERT INTO period_days (user_id, date) VALUES ($1, $2)
+     ON CONFLICT (user_id, date) DO NOTHING`,
+    [req.userId, date]
+  );
+  res.json({ ok: true, date });
 });
 
-/* ================= CYCLES ================= */
-
-app.get('/api/cycles', requireAuth, (req, res) => {
-  const db = readDB();
-  const cycles = db.cycles.filter(c => c.userId === req.userId).sort((a, b) => a.startDate.localeCompare(b.startDate));
-  res.json({ cycles });
+app.delete('/api/period-days/:date', requireAuth, async (req, res) => {
+  await pool.query('DELETE FROM period_days WHERE user_id = $1 AND date = $2', [req.userId, req.params.date]);
+  res.json({ ok: true, date: req.params.date });
 });
 
-app.post('/api/cycles/start', requireAuth, (req, res) => {
-  const db = readDB();
-  const ongoing = db.cycles.find(c => c.userId === req.userId && !c.endDate);
-  if (ongoing) return res.status(409).json({ error: 'A period is already being tracked' });
-  const cycle = { id: crypto.randomUUID(), userId: req.userId, startDate: req.body.startDate || todayStr(), endDate: null };
-  db.cycles.push(cycle);
-  writeDB(db);
-  res.json({ cycle });
+app.get('/api/period-end', requireAuth, async (req, res) => {
+  const result = await pool.query(
+    'SELECT date FROM period_end_dates WHERE user_id = $1 ORDER BY date DESC LIMIT 1',
+    [req.userId]
+  );
+  const date = result.rows[0] ? toDateStr(new Date(result.rows[0].date)) : null;
+  res.json({ date });
 });
 
-app.post('/api/cycles/end', requireAuth, (req, res) => {
-  const db = readDB();
-  const ongoing = db.cycles.find(c => c.userId === req.userId && !c.endDate);
-  if (!ongoing) return res.status(404).json({ error: 'No period is currently being tracked' });
-  ongoing.endDate = req.body.endDate || todayStr();
-  writeDB(db);
-  res.json({ cycle: ongoing });
+app.post('/api/period-end', requireAuth, async (req, res) => {
+  const { date } = req.body || {};
+  if (!date) return res.status(400).json({ error: 'date is required' });
+  if (date > todayStr()) return res.status(400).json({ error: "You can't mark a future period end date" });
+
+  await pool.query(
+    `INSERT INTO period_end_dates (user_id, date) VALUES ($1, $2)
+     ON CONFLICT (user_id, date) DO NOTHING`,
+    [req.userId, date]
+  );
+  res.json({ ok: true, date });
+});
+
+app.delete('/api/period-end/:date', requireAuth, async (req, res) => {
+  await pool.query('DELETE FROM period_end_dates WHERE user_id = $1 AND date = $2', [req.userId, req.params.date]);
+  res.json({ ok: true, date: req.params.date });
+});
+
+app.get('/api/cycles-summary', requireAuth, async (req, res) => {
+  const userRes = await pool.query('SELECT * FROM users WHERE id = $1', [req.userId]);
+  const user = userRes.rows[0];
+
+  const pdRes = await pool.query(
+    'SELECT date FROM period_days WHERE user_id = $1 ORDER BY date ASC',
+    [req.userId]
+  );
+  const dates = pdRes.rows.map(r => toDateStr(new Date(r.date)));
+
+  const endRes = await pool.query(
+    'SELECT date FROM period_end_dates WHERE user_id = $1 ORDER BY date DESC LIMIT 1',
+    [req.userId]
+  );
+  const periodEndDate = endRes.rows[0] ? toDateStr(new Date(endRes.rows[0].date)) : null;
+
+  const groups = groupPeriodDays(dates);
+
+  let avgCycleLength = (user && user.avg_cycle_length) || 28;
+  let longestCycle = null;
+  if (groups.length >= 2) {
+    const gaps = [];
+    for (let i = 1; i < groups.length; i++) {
+      const prevStart = new Date(groups[i - 1].startDate + 'T00:00:00');
+      const curStart = new Date(groups[i].startDate + 'T00:00:00');
+      gaps.push(Math.round((curStart - prevStart) / 86400000));
+    }
+    avgCycleLength = gaps.reduce((a, b) => a + b, 0) / gaps.length;
+    longestCycle = Math.max(...gaps);
+  }
+
+  const periodLengths = groups.map(g => {
+    const s = new Date(g.startDate + 'T00:00:00'), e = new Date(g.endDate + 'T00:00:00');
+    return Math.round((e - s) / 86400000) + 1;
+  });
+  const avgPeriodLength = periodLengths.length
+    ? periodLengths.reduce((a, b) => a + b, 0) / periodLengths.length
+    : ((user && user.avg_period_length) || 5);
+
+  const lastGroup = groups.length ? groups[groups.length - 1] : null;
+  let ongoing = false;
+  const currentDate = todayStr();
+  if (periodEndDate) {
+    const start = lastGroup ? lastGroup.startDate : null;
+    ongoing = Boolean(start && currentDate >= start && currentDate <= periodEndDate);
+  } else {
+    ongoing = dates.includes(currentDate);
+  }
+  let nextPeriodDate = null;
+  if (lastGroup) {
+    const base = new Date(lastGroup.startDate + 'T00:00:00');
+    nextPeriodDate = toDateStr(new Date(base.getTime() + Math.round(avgCycleLength) * 86400000));
+  }
+
+  res.json({
+    periodDays: dates,
+    cycles: groups,
+    cyclesLogged: groups.length,
+    avgCycleLength: Math.round(avgCycleLength * 10) / 10,
+    avgPeriodLength: Math.round(avgPeriodLength * 10) / 10,
+    longestCycle,
+    lastPeriodStart: lastGroup ? lastGroup.startDate : null,
+    periodEndDate,
+    ongoing,
+    nextPeriodDate
+  });
 });
 
 /* ================= DAILY LOGS ================= */
 
-app.get('/api/logs', requireAuth, (req, res) => {
-  const db = readDB();
-  let logs = db.logs.filter(l => l.userId === req.userId);
-  if (req.query.month) logs = logs.filter(l => l.date.startsWith(req.query.month));
-  res.json({ logs });
-});
-
-app.get('/api/logs/:date', requireAuth, (req, res) => {
-  const db = readDB();
-  const log = db.logs.find(l => l.userId === req.userId && l.date === req.params.date);
-  res.json({ log: log || null });
-});
-
-app.post('/api/logs', requireAuth, (req, res) => {
-  const db = readDB();
-  const { date } = req.body || {};
-  if (!date) return res.status(400).json({ error: 'date is required' });
-  const fields = ['mood', 'flow', 'sleep', 'water', 'exercise', 'stress', 'symptoms', 'notes'];
-  let log = db.logs.find(l => l.userId === req.userId && l.date === date);
-  if (log) {
-    fields.forEach(f => { if (req.body[f] !== undefined) log[f] = req.body[f]; });
-  } else {
-    log = { id: crypto.randomUUID(), userId: req.userId, date };
-    fields.forEach(f => { log[f] = req.body[f] !== undefined ? req.body[f] : null; });
-    db.logs.push(log);
+app.get('/api/logs', requireAuth, async (req, res) => {
+  let query = 'SELECT * FROM logs WHERE user_id = $1';
+  const params = [req.userId];
+  if (req.query.month) {
+    query += ` AND to_char(date, 'YYYY-MM') = $2`;
+    params.push(req.query.month);
   }
-  writeDB(db);
-  res.json({ log });
+  query += ' ORDER BY date ASC';
+  const result = await pool.query(query, params);
+  res.json({ logs: result.rows.map(rowToLog) });
 });
+
+app.get('/api/logs/:date', requireAuth, async (req, res) => {
+  const result = await pool.query(
+    'SELECT * FROM logs WHERE user_id = $1 AND date = $2',
+    [req.userId, req.params.date]
+  );
+  res.json({ log: result.rows.length ? rowToLog(result.rows[0]) : null });
+});
+
+app.post('/api/logs', requireAuth, async (req, res) => {
+  const { date, mood, flow, sleep, water, exercise, stress, symptoms, notes } = req.body || {};
+  if (!date) return res.status(400).json({ error: 'date is required' });
+  if (date > todayStr()) return res.status(400).json({ error: "You can't log a future date" });
+
+  const result = await pool.query(
+    `INSERT INTO logs (user_id, date, mood, flow, sleep, water, exercise, stress, symptoms, notes)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+     ON CONFLICT (user_id, date) DO UPDATE SET
+       mood = COALESCE(EXCLUDED.mood, logs.mood),
+       flow = COALESCE(EXCLUDED.flow, logs.flow),
+       sleep = COALESCE(EXCLUDED.sleep, logs.sleep),
+       water = COALESCE(EXCLUDED.water, logs.water),
+       exercise = COALESCE(EXCLUDED.exercise, logs.exercise),
+       stress = COALESCE(EXCLUDED.stress, logs.stress),
+       symptoms = COALESCE(EXCLUDED.symptoms, logs.symptoms),
+       notes = COALESCE(EXCLUDED.notes, logs.notes)
+     RETURNING *`,
+    [req.userId, date, mood || null, flow || null, sleep ?? null, water ?? null,
+     exercise || null, stress || null, JSON.stringify(symptoms || []), notes || null]
+  );
+  res.json({ log: rowToLog(result.rows[0]) });
+});
+
+function rowToLog(row) {
+  return {
+    id: row.id,
+    userId: row.user_id,
+    date: toDateStr(new Date(row.date)),
+    mood: row.mood,
+    flow: row.flow,
+    sleep: row.sleep,
+    water: row.water,
+    exercise: row.exercise,
+    stress: row.stress,
+    symptoms: row.symptoms || [],
+    notes: row.notes
+  };
+}
 
 /* ================= static frontend ================= */
 app.use(express.static(path.join(__dirname, '..')));

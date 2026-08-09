@@ -115,8 +115,18 @@
 <script>
 highlightNav('dailylog');
 
-const todayISO = new Date().toISOString().slice(0,10);
-document.getElementById('logTitle').textContent = 'Daily Log — ' + new Date().toLocaleDateString('en-US', { month:'long', day:'numeric' });
+const todayStr = new Date().toISOString().slice(0,10);
+const urlParams = new URLSearchParams(window.location.search);
+const logDate = urlParams.get('date') || todayStr;
+
+if(logDate > todayStr){
+  // future dates can't be logged — bounce back to the calendar
+  window.location.href = 'calendar.html';
+}
+
+document.getElementById('logTitle').textContent = 'Daily Log — ' +
+  new Date(logDate + 'T00:00:00').toLocaleDateString('en-US', { month:'long', day:'numeric' }) +
+  (logDate === todayStr ? ' (Today)' : '');
 
 function selectedPillValue(container){
   const sel = container.querySelector('.pill.selected, .seg-opt.selected');
@@ -151,7 +161,7 @@ function applyChips(container, values){
 
 async function loadTodayLog(){
   try{
-    const res = await authFetch('/api/logs/' + todayISO);
+    const res = await authFetch('/api/logs/' + logDate);
     const data = await res.json();
     if(!data.log) return;
     const log = data.log;
@@ -172,7 +182,7 @@ async function saveDailyLog(){
   btn.textContent = 'Saving...';
   btn.disabled = true;
   const payload = {
-    date: todayISO,
+    date: logDate,
     mood: selectedEmojiValue(document.getElementById('logMood')),
     flow: selectedPillValue(document.getElementById('logFlow')),
     sleep: Number(document.getElementById('logSleep').value),

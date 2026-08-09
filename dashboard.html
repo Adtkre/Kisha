@@ -93,10 +93,13 @@ highlightNav('dashboard');
 
 document.getElementById('dashDate').textContent = new Date().toLocaleDateString('en-US', { weekday:'long', day:'2-digit', month:'long', year:'numeric' });
 
-function phaseFor(dayNum, avgCycle){
-  const period = Math.min(6, Math.round(avgCycle*0.18));
+function phaseFor(dayNum, avgCycle, isInPeriod){
+  if(isInPeriod){
+    const period = Math.min(6, Math.round(avgCycle*0.18));
+    return dayNum <= period ? 'Menstrual' : 'Follicular';
+  }
+
   const ovulationCenter = Math.round(avgCycle/2);
-  if(dayNum <= period) return 'Menstrual';
   if(dayNum <= ovulationCenter - 2) return 'Follicular';
   if(dayNum <= ovulationCenter + 2) return 'Ovulation';
   return 'Luteal';
@@ -109,19 +112,14 @@ async function loadDashboard(user){
   document.getElementById('dashGreeting').innerHTML = greetWord + ',<br>' + firstName + ' 🌸';
   document.getElementById('dashAvatar').textContent = initialsOf(user.name);
 
-  const avgCycle = user.avgCycleLength || 28;
-
   try{
-    const res = await authFetch('/api/cycles');
-    const data = await res.json();
-    const cycles = (data.cycles || []).sort((a,b)=> a.startDate.localeCompare(b.startDate));
-    const ongoing = cycles.find(c => !c.endDate);
-    const completed = cycles.filter(c => c.endDate);
-    const lastCycle = cycles[cycles.length - 1];
+    const res = await authFetch('/api/cycles-summary');
+    const summary = await res.json();
+    const avgCycle = summary.avgCycleLength || 28;
 
     document.getElementById('metaAvgCycle').textContent = avgCycle + ' days';
 
-    if(!lastCycle){
+    if(!summary.lastPeriodStart){
       document.getElementById('ringDay').textContent = '—';
       document.getElementById('ringLabel').textContent = 'NO DATA YET';
       document.getElementById('metaLastPeriod').textContent = '—';
@@ -131,14 +129,22 @@ async function loadDashboard(user){
       return;
     }
 
-    const startDate = new Date(lastCycle.startDate + 'T00:00:00');
+    const startDate = new Date(summary.lastPeriodStart + 'T00:00:00');
+    const periodEndDate = summary.periodEndDate ? new Date(summary.periodEndDate + 'T00:00:00') : null;
     document.getElementById('metaLastPeriod').textContent = startDate.toLocaleDateString('en-US', { month:'short', day:'numeric' });
 
     const today = new Date(); today.setHours(0,0,0,0);
-    const dayNum = Math.max(1, Math.floor((today - startDate) / 86400000) + 1);
-    const phase = phaseFor(dayNum, avgCycle);
+    const isInPeriod = periodEndDate ? today <= periodEndDate : Boolean(summary.ongoing);
 
-    document.getElementById('ringDay').textContent = ongoing ? ('Day ' + dayNum) : ('Day ' + dayNum);
+    let dayNum = Math.max(1, Math.floor((today - startDate) / 86400000) + 1);
+    if (periodEndDate && today > periodEndDate) {
+      const daysSinceEnd = Math.max(1, Math.floor((today - periodEndDate) / 86400000) + 1);
+      dayNum = Math.max(1, Math.min(avgCycle, daysSinceEnd + 5));
+    }
+
+    const phase = phaseFor(dayNum, avgCycle, isInPeriod);
+
+    document.getElementById('ringDay').textContent = isInPeriod ? 'Day ' + dayNum : 'Cycle';
     document.getElementById('ringLabel').textContent = phase.toUpperCase();
     document.getElementById('metaPhase').textContent = phase;
 
@@ -146,11 +152,15 @@ async function loadDashboard(user){
     const circumference = 389.6;
     document.getElementById('cycleRing').style.strokeDashoffset = String(circumference * (1 - pct));
 
-    const nextPeriod = new Date(startDate.getTime() + avgCycle * 86400000);
-    const daysUntil = Math.round((nextPeriod - today) / 86400000);
-    if(ongoing){
+    const nextPeriod = summary.nextPeriodDate ? new Date(summary.nextPeriodDate + 'T00:00:00') : null;
+    const daysUntil = nextPeriod ? Math.round((nextPeriod - today) / 86400000) : null;
+
+    if(isInPeriod){
       document.getElementById('countdownNum').textContent = 'Period in progress';
       document.getElementById('countdownDate').textContent = 'started ' + startDate.toLocaleDateString('en-US',{month:'short', day:'numeric'});
+    } else if(daysUntil === null){
+      document.getElementById('countdownNum').textContent = '—';
+      document.getElementById('countdownDate').textContent = '';
     } else if(daysUntil <= 0){
       document.getElementById('countdownNum').textContent = 'Any day now';
       document.getElementById('countdownDate').textContent = nextPeriod.toLocaleDateString('en-US', { day:'2-digit', month:'long', year:'numeric' });
