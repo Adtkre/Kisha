@@ -5,8 +5,49 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Kisha — Know Your Body, Beautifully</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.cdnfonts.com/css/samarkan">
 <link rel="stylesheet" href="css/style.css">
+<style>
+  /* ===== Slide 1 cover override — watermark + Samarkan wordmark ===== */
+  .story-slide.s1{
+    background:
+      radial-gradient(circle at 20% 0%, rgba(255,255,255,0.06), transparent 55%),
+      linear-gradient(165deg, var(--mulberry) 0%, var(--berry-bush) 55%, var(--purple-kite) 130%);
+  }
+  .story-slide.s1 .story-waves{display:none;} /* replaced by watermark rows below */
+
+  .s1-watermark{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; justify-content:space-evenly;
+    overflow:hidden; pointer-events:none; z-index:0;
+  }
+  .s1-watermark-row{
+    white-space:nowrap; font-family:'Bebas Neue',sans-serif; font-weight:400;
+    font-size:clamp(80px, 200vw, 62px); letter-spacing:1px;
+    color:rgba(255,255,255,0.1); text-transform:uppercase; text-align:center;
+    transform:scaleY(1.4);
+  }
+
+  .s1-content{
+    position:relative; z-index:2; height:100%;
+    display:flex; align-items:center; justify-content:center;
+    padding:0 32px;
+  }
+  .s1-wordmark{
+    font-family:'Samarkan','Playfair Display',serif;
+    font-size:clamp(160px, 22vw, 118px);
+    color:#ffffff; text-align:center; line-height:1;
+    text-shadow:0 6px 24px rgba(0,0,0,0.28);
+  }
+  .story-slide.s1 .story-hint{ color:rgba(255,255,255,0.75); }
+
+  /* On slide 1 the background is dark, so flip the progress bar + topbar to light */
+  #storyViewport.on-dark .story-seg{ background:rgba(255,255,255,0.22); }
+  #storyViewport.on-dark .story-seg-fill{ background:#ffffff; }
+  #storyViewport.on-dark .story-topbar .logo{ color:#ffffff; }
+  #storyViewport.on-dark .story-topbar .logo span{ color:rgba(255,255,255,0.85); }
+</style>
 </head>
 <body class="story-body">
 
@@ -19,35 +60,26 @@
   </div>
 
   <div class="story-topbar">
-    <div class="logo">Kisha <span>✿</span></div>
+    <div class="logo">Kisha</div>
   </div>
 
   <div class="story-slides" id="storySlides">
 
-    <!-- SLIDE 1 — Intro -->
+    
     <div class="story-slide s1">
-      <svg class="story-waves" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-        <path d="M-40,110 C60,170 110,30 230,90 C340,145 380,55 460,130" stroke="currentColor" stroke-width="2.4" fill="none" opacity="0.32"/>
-        <path d="M-50,230 C50,300 130,180 240,250 C340,315 390,220 470,280" stroke="currentColor" stroke-width="1.8" fill="none" opacity="0.22"/>
-        <path d="M-40,340 C70,270 150,430 260,350 C360,285 400,405 470,335" stroke="currentColor" stroke-width="2" fill="none" opacity="0.26"/>
-        <path d="M-30,470 C80,530 140,410 250,470 C350,525 390,435 470,495" stroke="currentColor" stroke-width="2.2" fill="none" opacity="0.24"/>
-        <path d="M-40,590 C60,650 150,530 260,590 C350,640 390,550 470,610" stroke="currentColor" stroke-width="1.8" fill="none" opacity="0.2"/>
-        <path d="M-20,720 C70,680 160,780 250,720 C340,670 380,760 460,720" stroke="currentColor" stroke-width="2" fill="none" opacity="0.24"/>
-      </svg>
-      <div class="story-content">
-      <div class="story-icon">
-        <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M60 60c0-16 12-28 12-28s12 12 12 28-12 28-12 28-12-12-12-28z" stroke="#2F1B1A" stroke-width="3" stroke-linejoin="round"/>
-          <path d="M60 60c0-16-12-28-12-28S36 44 36 60s12 28 12 28 12-12 12-28z" stroke="#2F1B1A" stroke-width="3" stroke-linejoin="round"/>
-          <path d="M60 60c16 0 28 12 28 12s-12 12-28 12-28-12-28-12 12-12 28-12z" stroke="#2F1B1A" stroke-width="3" stroke-linejoin="round"/>
-          <path d="M60 60c16 0 28-12 28-12s-12-12-28-12-28 12-28 12 12 12 28 12z" stroke="#2F1B1A" stroke-width="3" stroke-linejoin="round"/>
-          <circle cx="60" cy="60" r="7" fill="#BD7893" stroke="#2F1B1A" stroke-width="2.4"/>
-        </svg>
+      <div class="s1-watermark" aria-hidden="true">
+        <div class="s1-watermark-row">PERIOD TRACKER PERIOD TRACKER</div>
+        <div class="s1-watermark-row">PERIOD TRACKER PERIOD TRACKER</div>
+        <div class="s1-watermark-row">PERIOD TRACKER PERIOD TRACKER</div>
+        <div class="s1-watermark-row">PERIOD TRACKER PERIOD TRACKER</div>
+        <div class="s1-watermark-row">PERIOD TRACKER PERIOD TRACKER</div>
+        <div class="s1-watermark-row">PERIOD TRACKER PERIOD TRACKER</div>
+        <div class="s1-watermark-row">PERIOD TRACKER PERIOD TRACKER</div>
       </div>
-      <h1 class="story-heading">Welcome to<br><em>Kisha</em></h1>
-      <p class="story-desc">A gentle space to know your body — track your cycle, mood, and wellness, <strong>all in one place</strong>.</p>
+      <div class="s1-content">
+        <div class="s1-wordmark">Kisha</div>
+      </div>
       <div class="story-hint">Tap to continue →</div>
-      </div>
     </div>
 
     <!-- SLIDE 2 — Track Boldly -->
@@ -125,6 +157,7 @@ function render(){
     if(i < current) seg.classList.add('completed');
     if(i === current) seg.classList.add('active');
   });
+  viewport.classList.toggle('on-dark', current === 0);
   clearTimeout(autoTimer);
   autoTimer = setTimeout(nextSlide, 6000);
 }
