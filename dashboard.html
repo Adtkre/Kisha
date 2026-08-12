@@ -4,178 +4,1414 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Dashboard</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="css/style.css">
+
+<style>
+/* ============================================================
+   DASHBOARD HERO
+   ============================================================ */
+
+.hero-card{
+  position:relative;
+
+  /* Slightly smaller than original 78vh */
+  min-height:74vh;
+
+  padding:34px 26px 30px;
+  margin-bottom:18px;
+
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+
+  overflow:hidden;
+  border-radius:36px;
+
+  background:
+    radial-gradient(
+      circle at 12% 6%,
+      rgba(255,255,255,0.6),
+      transparent 42%
+    ),
+    radial-gradient(
+      circle at 88% 92%,
+      rgba(255,255,255,0.35),
+      transparent 40%
+    ),
+    linear-gradient(
+      160deg,
+      var(--clay-bg) 0%,
+      rgba(240,210,222,0.8) 100%
+    );
+}
+
+
+/* =========================
+   FLOWERS
+   ========================= */
+
+.hero-flower{
+  position:absolute;
+  opacity:0.3;
+  pointer-events:none;
+  color:var(--berry-bush);
+}
+
+.hero-flower svg{
+  width:100%;
+  height:100%;
+  display:block;
+}
+
+.hero-flower.fl-left{
+  top:8px;
+  left:-30px;
+  width:180px;
+  height:180px;
+  transform:rotate(-12deg);
+}
+
+.hero-flower.fl-right{
+  bottom:-10px;
+  right:-32px;
+  width:190px;
+  height:190px;
+  transform:rotate(8deg) scaleX(-1);
+}
+
+
+/* =========================
+   SPARKLES
+   ========================= */
+
+.hero-sparkle{
+  position:absolute;
+  color:var(--gizmo);
+  opacity:0.55;
+  pointer-events:none;
+}
+
+.hero-sparkle svg{
+  width:100%;
+  height:100%;
+  display:block;
+}
+
+.hero-sparkle.sp1{
+  top:52px;
+  right:36px;
+  width:16px;
+  height:16px;
+}
+
+.hero-sparkle.sp2{
+  top:105px;
+  left:34px;
+  width:11px;
+  height:11px;
+  opacity:0.4;
+}
+
+.hero-sparkle.sp3{
+  bottom:125px;
+  right:24px;
+  width:13px;
+  height:13px;
+  opacity:0.45;
+}
+
+
+/* =========================
+   CYCLE RING
+   ========================= */
+
+.hero-ring-wrap{
+  position:relative;
+  display:flex;
+  justify-content:center;
+
+  margin:4px 0 4px;
+
+  z-index:1;
+}
+
+.hero-ring-wrap svg{
+  width:205px;
+  height:205px;
+
+  filter:
+    drop-shadow(
+      0 10px 22px rgba(122,64,77,0.24)
+    );
+}
+
+.hero-ring-plate{
+  position:absolute;
+
+  top:50%;
+  left:50%;
+
+  transform:translate(-50%,-50%);
+
+  width:160px;
+  height:160px;
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      #fff,
+      #FBF0F4 70%
+    );
+
+  box-shadow:
+    inset 0 2px 8px rgba(255,255,255,0.9),
+    0 6px 16px rgba(122,64,77,0.16);
+}
+
+.hero-ring-center{
+  position:absolute;
+
+  top:50%;
+  left:50%;
+
+  transform:translate(-50%,-50%);
+
+  text-align:center;
+  z-index:2;
+}
+
+.hero-ring-num{
+  font-family:'Playfair Display',serif;
+  font-weight:700;
+
+  font-size:48px;
+  line-height:1;
+
+  color:var(--berry-bush);
+}
+
+.hero-ring-unit{
+  font-size:11.5px;
+  font-weight:700;
+
+  letter-spacing:0.8px;
+
+  color:var(--text-secondary);
+
+  margin-top:5px;
+}
+
+.hero-ring-phase{
+  display:inline-block;
+
+  margin-top:10px;
+
+  padding:5px 15px;
+
+  border-radius:20px;
+
+  font-size:11.5px;
+  font-weight:700;
+
+  letter-spacing:0.3px;
+
+  background:rgba(122,64,77,0.12);
+  color:var(--berry-bush);
+}
+
+
+/* =========================
+   CAPTION
+   ========================= */
+
+.hero-caption{
+  text-align:center;
+
+  margin-top:20px;
+
+  font-size:13.5px;
+  font-weight:600;
+
+  color:var(--text-secondary);
+
+  letter-spacing:0.3px;
+}
+
+.hero-caption span{
+  color:var(--berry-bush);
+  font-weight:700;
+}
+
+
+/* =========================
+   META ROW
+   ========================= */
+
+.hero-meta-row{
+  display:flex;
+  justify-content:space-around;
+
+  text-align:center;
+
+  margin-top:22px;
+  padding-top:18px;
+
+  border-top:
+    1px solid rgba(122,64,77,0.14);
+
+  position:relative;
+  z-index:1;
+}
+
+.hero-meta-row .meta-val{
+  font-weight:700;
+  font-size:16px;
+}
+
+.hero-meta-row .meta-label{
+  font-size:11px;
+
+  color:var(--text-secondary);
+
+  margin-top:3px;
+
+  letter-spacing:0.2px;
+}
+
+
+/* =========================
+   CALENDAR BUTTON
+   ========================= */
+
+.hero-cta{
+  display:block;
+
+  width:100%;
+
+  margin-top:22px;
+
+  text-align:center;
+
+  padding:15px 18px;
+
+  border-radius:20px;
+
+  font-size:14.5px;
+  font-weight:700;
+
+  background:var(--berry-bush);
+  color:#fff;
+
+  box-shadow:
+    5px 5px 14px rgba(122,64,77,0.3),
+    -3px -3px 8px rgba(255,255,255,0.4);
+
+  position:relative;
+  z-index:1;
+}
+
+.hero-cta:active{
+  transform:scale(0.98);
+}
+
+
+/* =========================
+   SMALL SCREENS
+   ========================= */
+
+@media (max-width:380px){
+
+  .hero-card{
+    min-height:72vh;
+    padding:30px 18px 26px;
+  }
+
+  .hero-ring-wrap svg{
+    width:190px;
+    height:190px;
+  }
+
+  .hero-ring-plate{
+    width:148px;
+    height:148px;
+  }
+
+  .hero-ring-num{
+    font-size:44px;
+  }
+
+  .hero-caption{
+    margin-top:18px;
+  }
+
+  .hero-meta-row{
+    margin-top:20px;
+    padding-top:17px;
+  }
+
+  .hero-cta{
+    margin-top:20px;
+    padding:14px 16px;
+  }
+}
+
+</style>
 </head>
+
 <body>
+
 <div class="blob blob1"></div>
 <div class="blob blob2"></div>
 <div class="blob blob3"></div>
 
 <div id="app">
+
   <div class="screen active" id="screen-dashboard">
 
+    <!-- HEADER -->
+
     <div class="dash-header">
+
       <div>
-        <div class="greeting" id="dashGreeting">Good Morning,<br>there 🌸</div>
+        <div class="greeting" id="dashGreeting">
+          Good Morning,<br>
+          there
+        </div>
+
         <div class="greeting-date" id="dashDate"></div>
       </div>
+
       <div class="header-right">
-        <button class="quick-log-btn" onclick="openSheet('addlog')">+ Quick Log</button>
+
+        <button
+          class="quick-log-btn"
+          onclick="openSheet('addlog')">
+          + Quick Log
+        </button>
+
         <div class="avatar" id="dashAvatar">?</div>
+
       </div>
+
     </div>
 
-    <div class="clay cycle-card">
-      <div class="ring-wrap">
-        <svg width="150" height="150" viewBox="0 0 150 150">
-          <circle cx="75" cy="75" r="62" fill="none" stroke="rgba(122,64,77,0.12)" stroke-width="12"/>
-          <circle id="cycleRing" cx="75" cy="75" r="62" fill="none" stroke="url(#grad1)" stroke-width="12" stroke-linecap="round"
-            stroke-dasharray="389.6" stroke-dashoffset="389.6" transform="rotate(-90 75 75)"/>
-          <defs><linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#D89FB6"/><stop offset="100%" stop-color="#7A404D"/>
-          </linearGradient></defs>
+
+    <!-- HERO CARD -->
+
+    <div class="clay hero-card">
+
+      <!-- LEFT FLOWER -->
+
+      <div
+        class="hero-flower fl-left"
+        aria-hidden="true">
+
+        <svg
+          viewBox="0 0 120 120"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+
+          <path
+            d="M10 90C30 70 40 50 45 25"
+            stroke="currentColor"
+            stroke-width="1.4"
+            stroke-linecap="round"/>
+
+          <g
+            stroke="currentColor"
+            stroke-width="1.2">
+
+            <ellipse
+              cx="30"
+              cy="60"
+              rx="9"
+              ry="5"
+              transform="rotate(35 30 60)"
+              fill="none"/>
+
+            <ellipse
+              cx="20"
+              cy="78"
+              rx="9"
+              ry="5"
+              transform="rotate(60 20 78)"
+              fill="none"/>
+
+            <g transform="translate(45 22)">
+
+              <ellipse
+                cx="0"
+                cy="-8"
+                rx="6"
+                ry="9"
+                fill="none"/>
+
+              <ellipse
+                cx="7"
+                cy="-3"
+                rx="6"
+                ry="9"
+                transform="rotate(72)"
+                fill="none"/>
+
+              <ellipse
+                cx="4"
+                cy="6"
+                rx="6"
+                ry="9"
+                transform="rotate(144)"
+                fill="none"/>
+
+              <ellipse
+                cx="-4"
+                cy="6"
+                rx="6"
+                ry="9"
+                transform="rotate(216)"
+                fill="none"/>
+
+              <ellipse
+                cx="-7"
+                cy="-3"
+                rx="6"
+                ry="9"
+                transform="rotate(288)"
+                fill="none"/>
+
+              <circle
+                cx="0"
+                cy="0"
+                r="2"
+                fill="currentColor"
+                stroke="none"/>
+
+            </g>
+
+          </g>
+
         </svg>
-        <div class="ring-center"><div class="ring-day" id="ringDay">—</div><div class="ring-label" id="ringLabel">NO DATA YET</div></div>
+
       </div>
-      <div class="cycle-meta">
-        <div><div class="meta-val" id="metaLastPeriod">—</div><div class="meta-label">Last Period</div></div>
-        <div><div class="meta-val" id="metaAvgCycle">—</div><div class="meta-label">Avg Cycle</div></div>
-        <div><div class="meta-val" id="metaPhase">—</div><div class="meta-label">Phase</div></div>
+
+
+      <!-- RIGHT FLOWER -->
+
+      <div
+        class="hero-flower fl-right"
+        aria-hidden="true">
+
+        <svg
+          viewBox="0 0 120 120"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+
+          <path
+            d="M12 92C34 74 44 52 50 24"
+            stroke="currentColor"
+            stroke-width="1.4"
+            stroke-linecap="round"/>
+
+          <g
+            stroke="currentColor"
+            stroke-width="1.2">
+
+            <ellipse
+              cx="32"
+              cy="64"
+              rx="9"
+              ry="5"
+              transform="rotate(-30 32 64)"
+              fill="none"/>
+
+            <g transform="translate(50 20)">
+
+              <ellipse
+                cx="0"
+                cy="-8"
+                rx="6"
+                ry="9"
+                fill="none"/>
+
+              <ellipse
+                cx="7"
+                cy="-3"
+                rx="6"
+                ry="9"
+                transform="rotate(72)"
+                fill="none"/>
+
+              <ellipse
+                cx="4"
+                cy="6"
+                rx="6"
+                ry="9"
+                transform="rotate(144)"
+                fill="none"/>
+
+              <ellipse
+                cx="-4"
+                cy="6"
+                rx="6"
+                ry="9"
+                transform="rotate(216)"
+                fill="none"/>
+
+              <ellipse
+                cx="-7"
+                cy="-3"
+                rx="6"
+                ry="9"
+                transform="rotate(288)"
+                fill="none"/>
+
+              <circle
+                cx="0"
+                cy="0"
+                r="2"
+                fill="currentColor"
+                stroke="none"/>
+
+            </g>
+
+
+            <g transform="translate(16 86)">
+
+              <ellipse
+                cx="0"
+                cy="-6"
+                rx="4.5"
+                ry="6.5"
+                fill="none"/>
+
+              <ellipse
+                cx="5"
+                cy="-2"
+                rx="4.5"
+                ry="6.5"
+                transform="rotate(72)"
+                fill="none"/>
+
+              <ellipse
+                cx="3"
+                cy="4.5"
+                rx="4.5"
+                ry="6.5"
+                transform="rotate(144)"
+                fill="none"/>
+
+              <ellipse
+                cx="-3"
+                cy="4.5"
+                rx="4.5"
+                ry="6.5"
+                transform="rotate(216)"
+                fill="none"/>
+
+              <ellipse
+                cx="-5"
+                cy="-2"
+                rx="4.5"
+                ry="6.5"
+                transform="rotate(288)"
+                fill="none"/>
+
+              <circle
+                cx="0"
+                cy="0"
+                r="1.6"
+                fill="currentColor"
+                stroke="none"/>
+
+            </g>
+
+          </g>
+
+        </svg>
+
       </div>
-      <div class="bloom">🌸</div>
+
+
+      <!-- SPARKLES -->
+
+      <div
+        class="hero-sparkle sp1"
+        aria-hidden="true">
+
+        <svg
+          viewBox="0 0 24 24"
+          fill="currentColor">
+
+          <path d="M12 0c1 6 5 10 12 12-7 2-11 6-12 12-1-6-5-10-12-12 7-2 11-6 12-12z"/>
+
+        </svg>
+
+      </div>
+
+
+      <div
+        class="hero-sparkle sp2"
+        aria-hidden="true">
+
+        <svg
+          viewBox="0 0 24 24"
+          fill="currentColor">
+
+          <path d="M12 0c1 6 5 10 12 12-7 2-11 6-12 12-1-6-5-10-12-12 7-2 11-6 12-12z"/>
+
+        </svg>
+
+      </div>
+
+
+      <div
+        class="hero-sparkle sp3"
+        aria-hidden="true">
+
+        <svg
+          viewBox="0 0 24 24"
+          fill="currentColor">
+
+          <path d="M12 0c1 6 5 10 12 12-7 2-11 6-12 12-1-6-5-10-12-12 7-2 11-6 12-12z"/>
+
+        </svg>
+
+      </div>
+
+
+      <!-- RING -->
+
+      <div class="hero-ring-wrap">
+
+        <svg
+          width="190"
+          height="190"
+          viewBox="0 0 220 220">
+
+          <circle
+            cx="110"
+            cy="110"
+            r="94"
+            fill="none"
+            stroke="rgba(122,64,77,0.12)"
+            stroke-width="15"/>
+
+          <circle
+            id="cycleRing"
+            cx="110"
+            cy="110"
+            r="94"
+            fill="none"
+            stroke="url(#grad1)"
+            stroke-width="15"
+            stroke-linecap="round"
+            stroke-dasharray="590.6"
+            stroke-dashoffset="590.6"
+            transform="rotate(-90 110 110)"/>
+
+          <defs>
+
+            <linearGradient
+              id="grad1"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="100%">
+
+              <stop
+                offset="0%"
+                stop-color="#D89FB6"/>
+
+              <stop
+                offset="100%"
+                stop-color="#7A404D"/>
+
+            </linearGradient>
+
+          </defs>
+
+        </svg>
+
+
+        <div class="hero-ring-plate"></div>
+
+
+        <div class="hero-ring-center">
+
+          <div
+            class="hero-ring-num"
+            id="ringDay">
+            —
+          </div>
+
+          <div
+            class="hero-ring-unit"
+            id="ringUnit">
+            NO DATA YET
+          </div>
+
+          <div
+            class="hero-ring-phase"
+            id="ringLabel">
+            —
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- CAPTION -->
+
+      <div
+        class="hero-caption"
+        id="heroCaption">
+        Log your first period to see a prediction here
+      </div>
+
+
+      <!-- META -->
+
+      <div class="hero-meta-row">
+
+        <div>
+
+          <div
+            class="meta-val"
+            id="metaLastPeriod">
+            —
+          </div>
+
+          <div class="meta-label">
+            Last Period
+          </div>
+
+        </div>
+
+
+        <div>
+
+          <div
+            class="meta-val"
+            id="metaAvgCycle">
+            —
+          </div>
+
+          <div class="meta-label">
+            Avg Cycle
+          </div>
+
+        </div>
+
+
+        <div>
+
+          <div
+            class="meta-val"
+            id="metaPhase">
+            —
+          </div>
+
+          <div class="meta-label">
+            Phase
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- BUTTON -->
+
+      <button
+        class="hero-cta"
+        onclick="window.location.href='calendar.html'">
+        Open Calendar
+      </button>
+
     </div>
 
-    <div class="glass next-period-card">
-      <div>
-        <div class="countdown-label">NEXT PERIOD EXPECTED</div>
-        <div class="countdown-num" id="countdownNum">—</div>
-        <div class="countdown-label" id="countdownDate"></div>
-      </div>
-      <button class="clay-btn btn-primary" style="padding:12px 18px; font-size:13px;" onclick="window.location.href='calendar.html'">Open Calendar</button>
-    </div>
   </div>
+
 </div>
+
+
+<!-- BOTTOM NAV -->
 
 <div id="bottomNav" class="show">
-  <div class="nav-item" data-target="dashboard" onclick="window.location.href='dashboard.html'">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9v11h14V9"/></svg>
+
+  <div
+    class="nav-item"
+    data-target="dashboard"
+    onclick="window.location.href='dashboard.html'">
+
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round">
+
+      <path d="M3 10.5L12 3l9 7.5"/>
+      <path d="M5 9v11h14V9"/>
+
+    </svg>
+
     Home
+
   </div>
-  <div class="nav-item" data-target="calendar" onclick="window.location.href='calendar.html'">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
+
+
+  <div
+    class="nav-item"
+    data-target="calendar"
+    onclick="window.location.href='calendar.html'">
+
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round">
+
+      <rect
+        x="3"
+        y="5"
+        width="18"
+        height="16"
+        rx="3"/>
+
+      <path d="M8 3v4M16 3v4M3 10h18"/>
+
+    </svg>
+
     Calendar
+
   </div>
-  <div class="nav-item" data-target="dailylog" onclick="window.location.href='dailylog.html'">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V9z"/><path d="M14 3v6h6M9 13h6M9 17h6"/></svg>
+
+
+  <div
+    class="nav-item"
+    data-target="dailylog"
+    onclick="window.location.href='dailylog.html'">
+
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round">
+
+      <path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V9z"/>
+      <path d="M14 3v6h6M9 13h6M9 17h6"/>
+
+    </svg>
+
     Log
+
   </div>
-  <div class="nav-item" data-target="analytics" onclick="window.location.href='analytics.html'">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M6 21V10M12 21V4M18 21v-7"/></svg>
+
+
+  <div
+    class="nav-item"
+    data-target="analytics"
+    onclick="window.location.href='analytics.html'">
+
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round">
+
+      <path d="M3 21h18M6 21V10M12 21V4M18 21v-7"/>
+
+    </svg>
+
     Insights
+
   </div>
-  <div class="nav-item" data-target="profile" onclick="window.location.href='profile.html'">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+
+
+  <div
+    class="nav-item"
+    data-target="profile"
+    onclick="window.location.href='profile.html'">
+
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round">
+
+      <circle
+        cx="12"
+        cy="8"
+        r="4"/>
+
+      <path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>
+
+    </svg>
+
     Profile
+
   </div>
+
 </div>
 
-<div class="sheet-overlay" id="sheetOverlay" onclick="if(event.target===this) closeSheet()">
-  <div class="glass sheet" id="sheetContent"></div>
+
+<!-- SHEET -->
+
+<div
+  class="sheet-overlay"
+  id="sheetOverlay"
+  onclick="if(event.target===this) closeSheet()">
+
+  <div
+    class="glass sheet"
+    id="sheetContent">
+  </div>
+
 </div>
-<div id="toast" style="position:fixed; top:20px; left:50%; transform:translateX(-50%) translateY(-100px); background:var(--weathervane); color:#F0D2DE; padding:12px 22px; border-radius:16px; font-size:13.5px; font-weight:600; z-index:200; transition:transform .35s ease; box-shadow:0 8px 24px rgba(0,0,0,0.25);"></div>
+
+
+<!-- TOAST -->
+
+<div
+  id="toast"
+  style="
+    position:fixed;
+    top:20px;
+    left:50%;
+    transform:translateX(-50%) translateY(-100px);
+    background:var(--weathervane);
+    color:#F0D2DE;
+    padding:12px 22px;
+    border-radius:16px;
+    font-size:13.5px;
+    font-weight:600;
+    z-index:200;
+    transition:transform .35s ease;
+    box-shadow:0 8px 24px rgba(0,0,0,0.25);
+  ">
+</div>
+
 
 <script src="js/main.js"></script>
 <script src="js/auth.js"></script>
+
 <script>
+
 highlightNav('dashboard');
 
-document.getElementById('dashDate').textContent = new Date().toLocaleDateString('en-US', { weekday:'long', day:'2-digit', month:'long', year:'numeric' });
+
+document.getElementById('dashDate').textContent =
+  new Date().toLocaleDateString(
+    'en-US',
+    {
+      weekday:'long',
+      day:'2-digit',
+      month:'long',
+      year:'numeric'
+    }
+  );
+
 
 function phaseFor(dayNum, avgCycle, isInPeriod){
+
   if(isInPeriod){
-    const period = Math.min(6, Math.round(avgCycle*0.18));
-    return dayNum <= period ? 'Menstrual' : 'Follicular';
+
+    const period =
+      Math.min(
+        6,
+        Math.round(avgCycle * 0.18)
+      );
+
+    return dayNum <= period
+      ? 'Menstrual'
+      : 'Follicular';
   }
 
-  const ovulationCenter = Math.round(avgCycle/2);
-  if(dayNum <= ovulationCenter - 2) return 'Follicular';
-  if(dayNum <= ovulationCenter + 2) return 'Ovulation';
+
+  const ovulationCenter =
+    Math.round(avgCycle / 2);
+
+  if(dayNum <= ovulationCenter - 2)
+    return 'Follicular';
+
+  if(dayNum <= ovulationCenter + 2)
+    return 'Ovulation';
+
   return 'Luteal';
 }
 
+
 async function loadDashboard(user){
-  const firstName = (user.name || 'there').split(' ')[0];
-  const hour = new Date().getHours();
-  const greetWord = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
-  document.getElementById('dashGreeting').innerHTML = greetWord + ',<br>' + firstName + ' 🌸';
-  document.getElementById('dashAvatar').textContent = initialsOf(user.name);
+
+  const firstName =
+    (user.name || 'there')
+      .split(' ')[0];
+
+  const hour =
+    new Date().getHours();
+
+  const greetWord =
+    hour < 12
+      ? 'Good Morning'
+      : hour < 17
+        ? 'Good Afternoon'
+        : 'Good Evening';
+
+
+  document.getElementById(
+    'dashGreeting'
+  ).innerHTML =
+    greetWord +
+    ',<br>' +
+    firstName;
+
+
+  document.getElementById(
+    'dashAvatar'
+  ).textContent =
+    initialsOf(user.name);
+
 
   try{
-    const res = await authFetch('/api/cycles-summary');
-    const summary = await res.json();
-    const avgCycle = summary.avgCycleLength || 28;
 
-    document.getElementById('metaAvgCycle').textContent = avgCycle + ' days';
+    const res =
+      await authFetch('/api/cycles-summary');
+
+    const summary =
+      await res.json();
+
+    const avgCycle =
+      summary.avgCycleLength || 28;
+
+
+    document.getElementById(
+      'metaAvgCycle'
+    ).textContent =
+      avgCycle + ' days';
+
 
     if(!summary.lastPeriodStart){
-      document.getElementById('ringDay').textContent = '—';
-      document.getElementById('ringLabel').textContent = 'NO DATA YET';
-      document.getElementById('metaLastPeriod').textContent = '—';
-      document.getElementById('metaPhase').textContent = '—';
-      document.getElementById('countdownNum').textContent = 'Log your first period';
-      document.getElementById('countdownDate').textContent = 'to see a prediction here';
+
+      document.getElementById(
+        'ringDay'
+      ).textContent = '—';
+
+      document.getElementById(
+        'ringUnit'
+      ).textContent = 'NO DATA YET';
+
+      document.getElementById(
+        'ringLabel'
+      ).textContent = 'Log a period';
+
+      document.getElementById(
+        'metaLastPeriod'
+      ).textContent = '—';
+
+      document.getElementById(
+        'metaPhase'
+      ).textContent = '—';
+
+      document.getElementById(
+        'heroCaption'
+      ).textContent =
+        'Log your first period to see a prediction here';
+
       return;
     }
 
-    const startDate = new Date(summary.lastPeriodStart + 'T00:00:00');
-    const periodEndDate = summary.periodEndDate ? new Date(summary.periodEndDate + 'T00:00:00') : null;
-    document.getElementById('metaLastPeriod').textContent = startDate.toLocaleDateString('en-US', { month:'short', day:'numeric' });
 
-    const today = new Date(); today.setHours(0,0,0,0);
-    const isInPeriod = periodEndDate ? today <= periodEndDate : Boolean(summary.ongoing);
+    const startDate =
+      new Date(
+        summary.lastPeriodStart +
+        'T00:00:00'
+      );
 
-    let dayNum = Math.max(1, Math.floor((today - startDate) / 86400000) + 1);
-    if (periodEndDate && today > periodEndDate) {
-      const daysSinceEnd = Math.max(1, Math.floor((today - periodEndDate) / 86400000) + 1);
-      dayNum = Math.max(1, Math.min(avgCycle, daysSinceEnd + 5));
+
+    const periodEndDate =
+      summary.periodEndDate
+        ? new Date(
+            summary.periodEndDate +
+            'T00:00:00'
+          )
+        : null;
+
+
+    document.getElementById(
+      'metaLastPeriod'
+    ).textContent =
+      startDate.toLocaleDateString(
+        'en-US',
+        {
+          month:'short',
+          day:'numeric'
+        }
+      );
+
+
+    const today = new Date();
+
+    today.setHours(
+      0,
+      0,
+      0,
+      0
+    );
+
+
+    const isInPeriod =
+      periodEndDate
+        ? today <= periodEndDate
+        : Boolean(summary.ongoing);
+
+
+    let dayNum =
+      Math.max(
+        1,
+        Math.floor(
+          (today - startDate) /
+          86400000
+        ) + 1
+      );
+
+
+    if(
+      periodEndDate &&
+      today > periodEndDate
+    ){
+
+      const daysSinceEnd =
+        Math.max(
+          1,
+          Math.floor(
+            (today - periodEndDate) /
+            86400000
+          ) + 1
+        );
+
+
+      dayNum =
+        Math.max(
+          1,
+          Math.min(
+            avgCycle,
+            daysSinceEnd + 5
+          )
+        );
     }
 
-    const phase = phaseFor(dayNum, avgCycle, isInPeriod);
 
-    document.getElementById('ringDay').textContent = isInPeriod ? 'Day ' + dayNum : 'Cycle';
-    document.getElementById('ringLabel').textContent = phase.toUpperCase();
-    document.getElementById('metaPhase').textContent = phase;
+    const phase =
+      phaseFor(
+        dayNum,
+        avgCycle,
+        isInPeriod
+      );
 
-    const pct = Math.min(1, dayNum / avgCycle);
-    const circumference = 389.6;
-    document.getElementById('cycleRing').style.strokeDashoffset = String(circumference * (1 - pct));
 
-    const nextPeriod = summary.nextPeriodDate ? new Date(summary.nextPeriodDate + 'T00:00:00') : null;
-    const daysUntil = nextPeriod ? Math.round((nextPeriod - today) / 86400000) : null;
+    document.getElementById(
+      'metaPhase'
+    ).textContent =
+      phase;
+
+
+    const pct =
+      Math.min(
+        1,
+        dayNum / avgCycle
+      );
+
+
+    const circumference =
+      590.6;
+
+
+    document.getElementById(
+      'cycleRing'
+    ).style.strokeDashoffset =
+      String(
+        circumference *
+        (1 - pct)
+      );
+
+
+    const nextPeriod =
+      summary.nextPeriodDate
+        ? new Date(
+            summary.nextPeriodDate +
+            'T00:00:00'
+          )
+        : null;
+
+
+    const daysUntil =
+      nextPeriod
+        ? Math.round(
+            (nextPeriod - today) /
+            86400000
+          )
+        : null;
+
 
     if(isInPeriod){
-      document.getElementById('countdownNum').textContent = 'Period in progress';
-      document.getElementById('countdownDate').textContent = 'started ' + startDate.toLocaleDateString('en-US',{month:'short', day:'numeric'});
-    } else if(daysUntil === null){
-      document.getElementById('countdownNum').textContent = '—';
-      document.getElementById('countdownDate').textContent = '';
-    } else if(daysUntil <= 0){
-      document.getElementById('countdownNum').textContent = 'Any day now';
-      document.getElementById('countdownDate').textContent = nextPeriod.toLocaleDateString('en-US', { day:'2-digit', month:'long', year:'numeric' });
-    } else {
-      document.getElementById('countdownNum').textContent = daysUntil + (daysUntil===1 ? ' Day' : ' Days');
-      document.getElementById('countdownDate').textContent = nextPeriod.toLocaleDateString('en-US', { day:'2-digit', month:'long', year:'numeric' });
+
+      document.getElementById(
+        'ringDay'
+      ).textContent =
+        'Day ' + dayNum;
+
+      document.getElementById(
+        'ringUnit'
+      ).textContent =
+        'OF YOUR PERIOD';
+
+      document.getElementById(
+        'ringLabel'
+      ).textContent =
+        phase;
+
+      document.getElementById(
+        'heroCaption'
+      ).innerHTML =
+        'Period started <span>' +
+        startDate.toLocaleDateString(
+          'en-US',
+          {
+            month:'short',
+            day:'numeric'
+          }
+        ) +
+        '</span>';
+
     }
-  }catch(e){
-    document.getElementById('ringLabel').textContent = 'OFFLINE';
+
+    else if(daysUntil === null){
+
+      document.getElementById(
+        'ringDay'
+      ).textContent =
+        '—';
+
+      document.getElementById(
+        'ringUnit'
+      ).textContent =
+        '';
+
+      document.getElementById(
+        'ringLabel'
+      ).textContent =
+        phase;
+
+      document.getElementById(
+        'heroCaption'
+      ).textContent =
+        '';
+
+    }
+
+    else if(daysUntil <= 0){
+
+      document.getElementById(
+        'ringDay'
+      ).textContent =
+        'Now';
+
+      document.getElementById(
+        'ringUnit'
+      ).textContent =
+        'ANY DAY';
+
+      document.getElementById(
+        'ringLabel'
+      ).textContent =
+        phase;
+
+      document.getElementById(
+        'heroCaption'
+      ).innerHTML =
+        'Expected <span>' +
+        nextPeriod.toLocaleDateString(
+          'en-US',
+          {
+            day:'2-digit',
+            month:'long',
+            year:'numeric'
+          }
+        ) +
+        '</span>';
+
+    }
+
+    else{
+
+      document.getElementById(
+        'ringDay'
+      ).textContent =
+        daysUntil;
+
+      document.getElementById(
+        'ringUnit'
+      ).textContent =
+        daysUntil === 1
+          ? 'DAY LEFT'
+          : 'DAYS LEFT';
+
+      document.getElementById(
+        'ringLabel'
+      ).textContent =
+        phase;
+
+      document.getElementById(
+        'heroCaption'
+      ).innerHTML =
+        'Next period expected <span>' +
+        nextPeriod.toLocaleDateString(
+          'en-US',
+          {
+            day:'2-digit',
+            month:'long',
+            year:'numeric'
+          }
+        ) +
+        '</span>';
+    }
+
+  }
+
+  catch(e){
+
+    document.getElementById(
+      'ringLabel'
+    ).textContent =
+      'Offline';
+
   }
 }
 
-function onCycleChanged(){ loadDashboard(getStoredUser() || {}); }
+
+function onCycleChanged(){
+
+  loadDashboard(
+    getStoredUser() || {}
+  );
+
+}
+
 
 requireAuth(loadDashboard);
+
 </script>
+
 </body>
 </html>
