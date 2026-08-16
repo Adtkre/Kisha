@@ -9,13 +9,23 @@
 <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/samarkan">
 <link rel="stylesheet" href="css/style.css">
 <style>
-  /* ===== Slide 1 cover override — watermark + Samarkan wordmark ===== */
+  /* ===== Story slides — Rose Ink / Blush Wine / Petal Dust, unified watermark language ===== */
   .story-slide.s1{
     background:
       radial-gradient(circle at 20% 0%, rgba(255,255,255,0.06), transparent 55%),
-      linear-gradient(165deg, var(--mulberry) 0%, var(--berry-bush) 55%, var(--purple-kite) 130%);
+      linear-gradient(165deg, var(--blush-wine) 0%, var(--rose-ink) 55%, #1C0410 130%);
   }
-  .story-slide.s1 .story-waves{display:none;} /* replaced by watermark rows below */
+  .story-slide.s2{
+    background:
+      radial-gradient(circle at 20% 0%, rgba(255,255,255,0.06), transparent 55%),
+      linear-gradient(165deg, #8E2C4C 0%, var(--blush-wine) 55%, #3B1023 130%);
+  }
+  .story-slide.s3{
+    background:
+      radial-gradient(circle at 20% 0%, rgba(255,255,255,0.08), transparent 55%),
+      linear-gradient(165deg, #D291AA 0%, var(--petal-dust) 55%, #7C3A50 130%);
+  }
+  .story-slide.s1 .story-waves{display:none;} /* replaced by watermark rows below, on every slide */
 
   .s1-watermark{
     position:absolute; inset:0;
@@ -24,7 +34,7 @@
   }
   .s1-watermark-row{
     white-space:nowrap; font-family:'Bebas Neue',sans-serif; font-weight:400;
-    font-size:clamp(48px, 15vw, 72px); letter-spacing:1px;
+    font-size:clamp(62px, 20vw, 94px); letter-spacing:1px;
     color:rgba(255,255,255,0.1); text-transform:uppercase; text-align:center;
     transform:scaleY(1.4);
   }
@@ -39,10 +49,9 @@
     font-size:clamp(160px, 22vw, 118px);
     color:#ffffff; text-align:center; line-height:1;
     text-shadow:0 6px 24px rgba(0,0,0,0.28);
+    transform:translateX(-5%);
   }
-  .story-slide.s1 .story-hint{ color:rgba(255,255,255,0.75); }
-
-  /* On slide 1 the background is dark, so flip the progress bar + topbar to light */
+  /* All three slides now sit on dark jewel-tone backgrounds, so the progress bar + topbar stay light throughout */
   #storyViewport.on-dark .story-seg{ background:rgba(255,255,255,0.22); }
   #storyViewport.on-dark .story-seg-fill{ background:#ffffff; }
   #storyViewport.on-dark .story-topbar .logo{ color:#ffffff; }
@@ -68,13 +77,13 @@
     
     <div class="story-slide s1">
       <div class="s1-watermark" aria-hidden="true">
-        <div class="s1-watermark-row">KNOW YOUR RHYTHM</div>
-        <div class="s1-watermark-row">KNOW YOUR RHYTHM</div>
-        <div class="s1-watermark-row">KNOW YOUR RHYTHM</div>
-        <div class="s1-watermark-row">KNOW YOUR RHYTHM</div>
-        <div class="s1-watermark-row">KNOW YOUR RHYTHM</div>
-        <div class="s1-watermark-row">KNOW YOUR RHYTHM</div>
-        <div class="s1-watermark-row">KNOW YOUR RHYTHM</div>
+        <div class="s1-watermark-row">BODY RHYTHM</div>
+        <div class="s1-watermark-row">BODY RHYTHM</div>
+        <div class="s1-watermark-row">BODY RHYTHM</div>
+        <div class="s1-watermark-row">BODY RHYTHM</div>
+        <div class="s1-watermark-row">BODY RHYTHM</div>
+        <div class="s1-watermark-row">BODY RHYTHM</div>
+        <div class="s1-watermark-row">BODY RHYTHM</div>
       </div>
       <div class="s1-content">
         <div class="s1-wordmark">Kisha</div>
@@ -84,24 +93,25 @@
 
     <!-- SLIDE 2 — Track Boldly -->
     <div class="story-slide s2">
-      <svg class="story-waves" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-        <path d="M-40,110 C60,170 110,30 230,90 C340,145 380,55 460,130" stroke="currentColor" stroke-width="2.4" fill="none" opacity="0.32"/>
-        <path d="M-50,230 C50,300 130,180 240,250 C340,315 390,220 470,280" stroke="currentColor" stroke-width="1.8" fill="none" opacity="0.22"/>
-        <path d="M-40,340 C70,270 150,430 260,350 C360,285 400,405 470,335" stroke="currentColor" stroke-width="2" fill="none" opacity="0.26"/>
-        <path d="M-30,470 C80,530 140,410 250,470 C350,525 390,435 470,495" stroke="currentColor" stroke-width="2.2" fill="none" opacity="0.24"/>
-        <path d="M-40,590 C60,650 150,530 260,590 C350,640 390,550 470,610" stroke="currentColor" stroke-width="1.8" fill="none" opacity="0.2"/>
-        <path d="M-20,720 C70,680 160,780 250,720 C340,670 380,760 460,720" stroke="currentColor" stroke-width="2" fill="none" opacity="0.24"/>
-      </svg>
+      <div class="story-watermark" aria-hidden="true">
+        <div class="story-watermark-row">TRACK BOLDLY</div>
+        <div class="story-watermark-row">TRACK BOLDLY</div>
+        <div class="story-watermark-row">TRACK BOLDLY</div>
+        <div class="story-watermark-row">TRACK BOLDLY</div>
+        <div class="story-watermark-row">TRACK BOLDLY</div>
+        <div class="story-watermark-row">TRACK BOLDLY</div>
+        <div class="story-watermark-row">TRACK BOLDLY</div>
+      </div>
       <div class="story-content">
       <div class="story-dashes"><span></span><span></span></div>
       <h2 class="story-heading">Track<br>Boldly</h2>
       <div class="story-icon">
         <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M60 14c14 20 26 36 26 52a26 26 0 11-52 0c0-16 12-32 26-52z" stroke="#2F1B1A" stroke-width="3.2" stroke-linejoin="round"/>
-          <path d="M46 74c0 8 6 13 13 13" stroke="#2F1B1A" stroke-width="2.6" stroke-linecap="round"/>
-          <path d="M20 30l-6-6M100 30l6-6M60 4v10" stroke="#2F1B1A" stroke-width="2.6" stroke-linecap="round"/>
-          <circle cx="18" cy="86" r="3" fill="#2F1B1A"/>
-          <circle cx="104" cy="90" r="2.4" fill="#2F1B1A"/>
+          <path d="M60 14c14 20 26 36 26 52a26 26 0 11-52 0c0-16 12-32 26-52z" stroke="#ffffff" stroke-width="2.2" stroke-linejoin="round" opacity="0.95"/>
+          <path d="M38 66h9l6-15 8 26 6-17 5 6h10" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+          <circle cx="16" cy="88" r="2.2" fill="#F0D2DE"/>
+          <circle cx="104" cy="26" r="2.6" fill="#F0D2DE"/>
+          <circle cx="24" cy="22" r="1.6" fill="#F0D2DE" opacity="0.8"/>
         </svg>
       </div>
       <p class="story-desc">Log every cycle with confidence and stop guessing — see your <strong>patterns clearly</strong> from day one.</p>
@@ -111,23 +121,24 @@
 
     <!-- SLIDE 3 — Stay Protected + Login/Signup -->
     <div class="story-slide s3">
-      <svg class="story-waves" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-        <path d="M-40,110 C60,170 110,30 230,90 C340,145 380,55 460,130" stroke="currentColor" stroke-width="2.4" fill="none" opacity="0.32"/>
-        <path d="M-50,230 C50,300 130,180 240,250 C340,315 390,220 470,280" stroke="currentColor" stroke-width="1.8" fill="none" opacity="0.22"/>
-        <path d="M-40,340 C70,270 150,430 260,350 C360,285 400,405 470,335" stroke="currentColor" stroke-width="2" fill="none" opacity="0.26"/>
-        <path d="M-30,470 C80,530 140,410 250,470 C350,525 390,435 470,495" stroke="currentColor" stroke-width="2.2" fill="none" opacity="0.24"/>
-        <path d="M-40,590 C60,650 150,530 260,590 C350,640 390,550 470,610" stroke="currentColor" stroke-width="1.8" fill="none" opacity="0.2"/>
-        <path d="M-20,720 C70,680 160,780 250,720 C340,670 380,760 460,720" stroke="currentColor" stroke-width="2" fill="none" opacity="0.24"/>
-      </svg>
+      <div class="story-watermark" aria-hidden="true">
+        <div class="story-watermark-row">STAY PROTECTED</div>
+        <div class="story-watermark-row">STAY PROTECTED</div>
+        <div class="story-watermark-row">STAY PROTECTED</div>
+        <div class="story-watermark-row">STAY PROTECTED</div>
+        <div class="story-watermark-row">STAY PROTECTED</div>
+        <div class="story-watermark-row">STAY PROTECTED</div>
+        <div class="story-watermark-row">STAY PROTECTED</div>
+      </div>
       <div class="story-content">
       <div class="story-dashes"><span></span><span></span></div>
       <h2 class="story-heading">Stay<br>Protected</h2>
       <div class="story-icon">
         <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M60 12l34 12v28c0 26-14 42-34 44-20-2-34-18-34-44V24z" stroke="#2F1B1A" stroke-width="3.2" stroke-linejoin="round"/>
-          <path d="M46 58l10 10 20-22" stroke="#2F1B1A" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="18" cy="30" r="2.4" fill="#2F1B1A"/>
-          <circle cx="102" cy="34" r="3" fill="#2F1B1A"/>
+          <path d="M60 12l34 12v28c0 26-14 42-34 44-20-2-34-18-34-44V24z" stroke="#ffffff" stroke-width="2.2" stroke-linejoin="round" opacity="0.95"/>
+          <path d="M60 50c6-8 18-6 18 3c0 9-18 20-18 20s-18-11-18-20c0-9 12-11 18-3z" stroke="#ffffff" stroke-width="2" stroke-linejoin="round" opacity="0.9"/>
+          <circle cx="16" cy="30" r="1.8" fill="#F0D2DE" opacity="0.85"/>
+          <circle cx="104" cy="34" r="2.4" fill="#F0D2DE"/>
         </svg>
       </div>
       <p class="story-desc">Your data is encrypted and <strong>always yours</strong> — never sold, never shared without asking.</p>
@@ -157,7 +168,7 @@ function render(){
     if(i < current) seg.classList.add('completed');
     if(i === current) seg.classList.add('active');
   });
-  viewport.classList.toggle('on-dark', current === 0);
+  viewport.classList.add('on-dark');
   clearTimeout(autoTimer);
   autoTimer = setTimeout(nextSlide, 6000);
 }
