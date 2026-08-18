@@ -17,7 +17,8 @@
   <div class="screen active" id="screen-settings">
 
     <h2 class="section-title" style="margin-top:6px; color:var(--weathervane);">Settings</h2>
-    <div class="glass-dark settings-list">
+    <div class="glass-dark settings-list" id="settingsList">
+      <div class="settings-row admin-only" id="editOnboardingRow" onclick="window.location.href='onboarding.html?edit=1'" style="display:none; cursor:pointer;">Edit Onboarding <span style="color:rgba(240,210,222,0.6); font-size:12.5px;">›</span></div>
       <div class="settings-row">Appearance <span style="color:rgba(240,210,222,0.6); font-size:12.5px;">Light ›</span></div>
       <div class="settings-row">Notifications <div class="toggle on" onclick="this.classList.toggle('on')"><div class="toggle-dot"></div></div></div>
       <div class="settings-row">Privacy <span style="color:rgba(240,210,222,0.6); font-size:12.5px;">›</span></div>
@@ -36,7 +37,12 @@
 
 <script src="js/main.js"></script>
 <script src="js/auth.js"></script>
-<script>requireAuth();</script>
+<script>
+requireAuth(function(user){
+  const row = document.getElementById('editOnboardingRow');
+  if (row && isAdminUser(user)) row.style.display = 'flex';
+});
+</script>
 
 </body>
 </html>

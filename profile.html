@@ -50,6 +50,7 @@
       </div>
     </div>
     <button class="clay-btn btn-primary btn-block" id="profSaveBtn" onclick="saveProfile()">Save Changes</button>
+    <button class="clay-btn btn-secondary btn-block" id="adminEditOnboardingBtn" onclick="window.location.href='onboarding.html?edit=1'" style="margin-top:12px; display:none;">Edit Onboarding</button>
     <button class="clay-btn btn-secondary btn-block" style="margin-top:12px; color:var(--rose-red); border-color:var(--rose-red);" onclick="logout()">Logout</button>
   </div>
 </div>
@@ -126,7 +127,13 @@ async function saveProfile(){
   btn.disabled = false;
 }
 
-requireAuth(fillProfile);
+requireAuth(function(user){
+  fillProfile(user);
+  const adminBtn = document.getElementById('adminEditOnboardingBtn');
+  if (adminBtn && isAdminUser(user)) {
+    adminBtn.style.display = 'block';
+  }
+});
 </script>
 </body>
 </html>

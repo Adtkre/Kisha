@@ -92,7 +92,49 @@
 <script src="js/main.js"></script>
 <script src="js/auth.js"></script>
 <script>
-requireAuth();
+function populateOnboardingFields(user){
+  if (!user) return;
+  const fields = {
+    obName: user.name || '',
+    obAge: user.age || '',
+    obHeight: user.height || '',
+    obWeight: user.weight || '',
+    obCycleLen: user.avgCycleLength || 28,
+    obPeriodLen: user.avgPeriodLength || 5,
+  };
+
+  Object.entries(fields).forEach(([id, value]) => {
+    const el = document.getElementById(id);
+    if (el) el.value = value;
+  });
+
+  const exerciseSelect = document.getElementById('obExercise');
+  if (exerciseSelect && user.exerciseFrequency) {
+    exerciseSelect.value = user.exerciseFrequency;
+  }
+
+  const conditions = (user.conditions || '').split(',').map(s => s.trim()).filter(Boolean);
+  if (conditions.length) {
+    document.querySelectorAll('#obConditions .chip').forEach(chip => {
+      const txt = chip.textContent.trim();
+      chip.classList.toggle('selected', conditions.includes(txt));
+    });
+  }
+}
+
+requireAuth(function(user){
+  const params = new URLSearchParams(window.location.search);
+  const allowEdit = params.get('edit') === '1';
+
+  if (allowEdit && !isAdminUser(user)) {
+    window.location.href = 'dashboard.html';
+    return;
+  }
+
+  if (allowEdit && user) {
+    populateOnboardingFields(user);
+  }
+});
 
 async function saveOnboarding(){
   const btn = document.getElementById('obFinishBtn');
