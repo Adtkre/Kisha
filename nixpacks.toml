@@ -1,7 +1,0 @@
-providers = ["node", "python"]
-
-[phases.install]
-cmds = ["...", "npm install --prefix server"]
-
-[start]
-cmd = "node server/server.js"
