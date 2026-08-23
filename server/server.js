@@ -11,6 +11,8 @@ require('dotenv').config();
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { spawn } = require('child_process');
+const fs = require('fs');
 const path = require('path');
 const { Pool } = require('pg');
 
@@ -197,6 +199,37 @@ app.put('/api/me', requireAuth, async (req, res) => {
 
 /* ================= PERIOD DAYS (per-day marking) ================= */
 
+async function updateUserAverages(userId) {
+  const pdRes = await pool.query('SELECT date FROM period_days WHERE user_id = $1 ORDER BY date ASC', [userId]);
+  const dates = pdRes.rows.map(r => toDateStr(new Date(r.date)));
+  const groups = groupPeriodDays(dates);
+
+  if (groups.length === 0) return; // No periods, rely on onboarding data
+
+  // Analyze period lengths
+  const periodLengths = groups.map(g => {
+    const s = new Date(g.startDate + 'T00:00:00'), e = new Date(g.endDate + 'T00:00:00');
+    return Math.round((e - s) / 86400000) + 1;
+  });
+  const avgPeriodLength = Math.round(periodLengths.reduce((a, b) => a + b, 0) / periodLengths.length);
+
+  // Analyze cycle lengths
+  if (groups.length >= 2) {
+    const gaps = [];
+    for (let i = 1; i < groups.length; i++) {
+      const prevStart = new Date(groups[i - 1].startDate + 'T00:00:00');
+      const curStart = new Date(groups[i].startDate + 'T00:00:00');
+      gaps.push(Math.round((curStart - prevStart) / 86400000));
+    }
+    const avgCycleLength = Math.round(gaps.reduce((a, b) => a + b, 0) / gaps.length);
+
+    await pool.query('UPDATE users SET avg_cycle_length = $1, avg_period_length = $2 WHERE id = $3', [avgCycleLength, avgPeriodLength, userId]);
+  } else {
+    // Only one cycle logged, just update period length
+    await pool.query('UPDATE users SET avg_period_length = $1 WHERE id = $2', [avgPeriodLength, userId]);
+  }
+}
+
 app.get('/api/period-days', requireAuth, async (req, res) => {
   const result = await pool.query(
     'SELECT date FROM period_days WHERE user_id = $1 ORDER BY date ASC',
@@ -214,11 +247,13 @@ app.post('/api/period-days', requireAuth, async (req, res) => {
      ON CONFLICT (user_id, date) DO NOTHING`,
     [req.userId, date]
   );
+  await updateUserAverages(req.userId);
   res.json({ ok: true, date });
 });
 
 app.delete('/api/period-days/:date', requireAuth, async (req, res) => {
   await pool.query('DELETE FROM period_days WHERE user_id = $1 AND date = $2', [req.userId, req.params.date]);
+  await updateUserAverages(req.userId);
   res.json({ ok: true, date: req.params.date });
 });
 
@@ -241,11 +276,13 @@ app.post('/api/period-end', requireAuth, async (req, res) => {
      ON CONFLICT (user_id, date) DO NOTHING`,
     [req.userId, date]
   );
+  await updateUserAverages(req.userId);
   res.json({ ok: true, date });
 });
 
 app.delete('/api/period-end/:date', requireAuth, async (req, res) => {
   await pool.query('DELETE FROM period_end_dates WHERE user_id = $1 AND date = $2', [req.userId, req.params.date]);
+  await updateUserAverages(req.userId);
   res.json({ ok: true, date: req.params.date });
 });
 
@@ -431,6 +468,46 @@ app.get('/api/export/csv', requireAuth, async (req, res) => {
   res.setHeader('Content-Type', 'text/csv');
   res.setHeader('Content-Disposition', 'attachment; filename="kisha_data.csv"');
   res.send(csv);
+});
+
+/* ================= MACHINE LEARNING ================= */
+app.get('/api/predictions/next-period', requireAuth, (req, res) => {
+  const pythonProcess = spawn('python', ['ml/predict.py', req.userId], { cwd: __dirname });
+  let dataString = '';
+  pythonProcess.stdout.on('data', (data) => dataString += data.toString());
+  pythonProcess.stderr.on('data', (data) => console.error(data.toString()));
+  pythonProcess.on('close', (code) => {
+    try {
+      let filtered = dataString.slice(dataString.indexOf('{'));
+      res.json(JSON.parse(filtered));
+    } catch (e) {
+      res.status(500).json({ error: 'Failed to parse ML output' });
+    }
+  });
+});
+
+app.post('/api/ml/train', requireAuth, (req, res) => {
+  const pythonProcess = spawn('python', ['ml/train.py', req.userId], { cwd: __dirname });
+  let dataString = '';
+  pythonProcess.stdout.on('data', (data) => dataString += data.toString());
+  pythonProcess.stderr.on('data', (data) => console.error(data.toString()));
+  pythonProcess.on('close', (code) => {
+    try {
+      let filtered = dataString.slice(dataString.indexOf('{'));
+      res.json(JSON.parse(filtered));
+    } catch (e) {
+      res.status(500).json({ error: 'Failed to parse ML output' });
+    }
+  });
+});
+
+app.get('/api/ml/status', requireAuth, (req, res) => {
+  const metaPath = path.join(__dirname, 'ml', 'artifacts', 'metadata.json');
+  if (fs.existsSync(metaPath)) {
+    res.json(JSON.parse(fs.readFileSync(metaPath, 'utf8')));
+  } else {
+    res.json({ model_available: false, reason: 'Model not trained yet' });
+  }
 });
 
 /* ================= static frontend ================= */
