@@ -1,0 +1,6 @@
+pandas
+numpy
+scikit-learn
+python-dotenv
+psycopg2-binary
+joblib
