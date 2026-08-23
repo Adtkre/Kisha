@@ -1,110 +1,248 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Analytics</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
-<div class="blob blob1"></div>
-<div class="blob blob2"></div>
-<div class="blob blob3"></div>
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
 
-<div id="app">
-  <div class="screen active" id="screen-analytics">
+  <div id="app">
+    <div class="screen active" id="screen-analytics">
 
-    <h2 class="section-title" style="margin-top:6px; color:var(--weathervane);">Analytics</h2>
+      <h2 class="section-title" style="margin-top:6px; color:var(--weathervane);">Analytics</h2>
 
-    <div class="stat-grid">
-      <div class="glass-dark stat-card"><div class="stat-val" id="statAvgCycle">—</div><div class="stat-label">AVG CYCLE (DAYS)</div></div>
-      <div class="glass-dark stat-card"><div class="stat-val" id="statAvgPeriod">—</div><div class="stat-label">AVG PERIOD (DAYS)</div></div>
-      <div class="glass-dark stat-card"><div class="stat-val" id="statCyclesLogged">—</div><div class="stat-label">CYCLES LOGGED</div></div>
-      <div class="glass-dark stat-card"><div class="stat-val" id="statLongestCycle">—</div><div class="stat-label">LONGEST CYCLE</div></div>
-    </div>
-
-    <div class="glass-dark chart-card">
-      <div class="chart-title">Cycle Length (last 6)</div>
-      <div class="bars">
-        <div class="bar" style="height:70%;"></div><div class="bar" style="height:85%;"></div><div class="bar" style="height:60%;"></div>
-        <div class="bar" style="height:95%;"></div><div class="bar" style="height:75%;"></div><div class="bar" style="height:80%;"></div>
+      <div class="stat-grid">
+        <div class="glass-dark stat-card">
+          <div class="stat-val" id="statAvgCycle">—</div>
+          <div class="stat-label">AVG CYCLE (DAYS)</div>
+        </div>
+        <div class="glass-dark stat-card">
+          <div class="stat-val" id="statAvgPeriod">—</div>
+          <div class="stat-label">AVG PERIOD (DAYS)</div>
+        </div>
+        <div class="glass-dark stat-card">
+          <div class="stat-val" id="statCyclesLogged">—</div>
+          <div class="stat-label">CYCLES LOGGED</div>
+        </div>
+        <div class="glass-dark stat-card">
+          <div class="stat-val" id="statLongestCycle">—</div>
+          <div class="stat-label">LONGEST CYCLE</div>
+        </div>
       </div>
-      <div class="bar-labels"><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span></div>
-    </div>
 
-    <div class="glass-dark chart-card">
-      <div class="chart-title">Mood Trend</div>
-      <svg class="line-chart-svg" viewBox="0 0 300 90">
-        <polyline points="0,60 50,40 100,55 150,20 200,35 250,15 300,30" fill="none" stroke="#D89FB6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </div>
-
-    <div class="glass-dark chart-card">
-      <div class="chart-title">Pain Trend</div>
-      <svg class="line-chart-svg" viewBox="0 0 300 90">
-        <polyline points="0,20 50,45 100,30 150,60 200,50 250,70 300,55" fill="none" stroke="#C97C7C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </div>
-
-    <div class="glass-dark chart-card">
-      <div class="chart-title">Sleep · Stress · Exercise · Water</div>
-      <div class="bars">
-        <div class="bar" style="height:65%;"></div><div class="bar" style="height:50%;"></div><div class="bar" style="height:80%;"></div><div class="bar" style="height:70%;"></div>
+      <div class="glass-dark chart-card">
+        <div class="chart-title">Cycle Length (last 6)</div>
+        <div class="bars" id="cycleBars">
+          <div class="bar" style="height:0%;"></div>
+          <div class="bar" style="height:0%;"></div>
+        </div>
+        <div class="bar-labels" id="cycleLabels">
+          <span>-</span><span>-</span>
+        </div>
       </div>
-      <div class="bar-labels"><span>Sleep</span><span>Stress</span><span>Exerc.</span><span>Water</span></div>
+
+      <div class="glass-dark chart-card">
+        <div class="chart-title">Mood Trend</div>
+        <svg class="line-chart-svg" viewBox="0 0 300 90">
+          <polyline points="0,90 300,90" fill="none" stroke="#D89FB6" stroke-width="3" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+      </div>
+
+      <div class="glass-dark chart-card">
+        <div class="chart-title">Pain Trend</div>
+        <svg class="line-chart-svg" viewBox="0 0 300 90">
+          <polyline points="0,90 300,90" fill="none" stroke="#C97C7C" stroke-width="3" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+      </div>
+
+      <div class="glass-dark chart-card">
+        <div class="chart-title">Today's Lifestyle</div>
+        <div class="bars" id="lifestyleBars">
+          <div class="bar" style="height:0%;"></div>
+          <div class="bar" style="height:0%;"></div>
+          <div class="bar" style="height:0%;"></div>
+          <div class="bar" style="height:0%;"></div>
+        </div>
+        <div class="bar-labels"><span>Sleep</span><span>Stress</span><span>Exerc.</span><span>Water</span></div>
+      </div>
     </div>
   </div>
-</div>
 
-<div id="bottomNav" class="show">
-  <div class="nav-item" data-target="dashboard" onclick="window.location.href='dashboard.html'">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9v11h14V9"/></svg>
-    Home
+  <div id="bottomNav" class="show">
+    <div class="nav-item" data-target="dashboard" onclick="window.location.href='dashboard.html'">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 10.5L12 3l9 7.5" />
+        <path d="M5 9v11h14V9" />
+      </svg>
+      Home
+    </div>
+    <div class="nav-item" data-target="calendar" onclick="window.location.href='calendar.html'">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="5" width="18" height="16" rx="3" />
+        <path d="M8 3v4M16 3v4M3 10h18" />
+      </svg>
+      Calendar
+    </div>
+    <div class="nav-item" data-target="dailylog" onclick="window.location.href='dailylog.html'">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V9z" />
+        <path d="M14 3v6h6M9 13h6M9 17h6" />
+      </svg>
+      Log
+    </div>
+    <div class="nav-item" data-target="analytics" onclick="window.location.href='analytics.html'">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 21h18M6 21V10M12 21V4M18 21v-7" />
+      </svg>
+      Insights
+    </div>
+    <div class="nav-item" data-target="profile" onclick="window.location.href='profile.html'">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4" />
+        <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
+      </svg>
+      Profile
+    </div>
   </div>
-  <div class="nav-item" data-target="calendar" onclick="window.location.href='calendar.html'">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
-    Calendar
+
+
+  <div class="sheet-overlay" id="sheetOverlay" onclick="if(event.target===this) closeSheet()">
+    <div class="glass sheet" id="sheetContent"></div>
   </div>
-  <div class="nav-item" data-target="dailylog" onclick="window.location.href='dailylog.html'">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V9z"/><path d="M14 3v6h6M9 13h6M9 17h6"/></svg>
-    Log
+  <div id="toast"
+    style="position:fixed; top:20px; left:50%; transform:translateX(-50%) translateY(-100px); background:var(--weathervane); color:#F0D2DE; padding:12px 22px; border-radius:16px; font-size:13.5px; font-weight:600; z-index:200; transition:transform .35s ease; box-shadow:0 8px 24px rgba(0,0,0,0.25);">
   </div>
-  <div class="nav-item" data-target="analytics" onclick="window.location.href='analytics.html'">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M6 21V10M12 21V4M18 21v-7"/></svg>
-    Insights
-  </div>
-  <div class="nav-item" data-target="profile" onclick="window.location.href='profile.html'">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
-    Profile
-  </div>
-</div>
 
+  <script src="js/main.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    highlightNav('analytics');
 
-<div class="sheet-overlay" id="sheetOverlay" onclick="if(event.target===this) closeSheet()">
-  <div class="glass sheet" id="sheetContent"></div>
-</div>
-<div id="toast" style="position:fixed; top:20px; left:50%; transform:translateX(-50%) translateY(-100px); background:var(--weathervane); color:#F0D2DE; padding:12px 22px; border-radius:16px; font-size:13.5px; font-weight:600; z-index:200; transition:transform .35s ease; box-shadow:0 8px 24px rgba(0,0,0,0.25);"></div>
+    async function loadAnalytics() {
+      try {
+        const res = await authFetch('/api/cycles-summary');
+        const summary = await res.json();
+        document.getElementById('statCyclesLogged').textContent = summary.cyclesLogged || '0';
+        document.getElementById('statAvgCycle').textContent = summary.cyclesLogged >= 2 ? summary.avgCycleLength : '—';
+        document.getElementById('statLongestCycle').textContent = summary.longestCycle != null ? summary.longestCycle : '—';
+        document.getElementById('statAvgPeriod').textContent = summary.cyclesLogged ? summary.avgPeriodLength : '—';
 
-<script src="js/main.js"></script>
-<script src="js/auth.js"></script>
-<script>
-highlightNav('analytics');
+        // Fetch Last 30 Days of Logs
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        const logsRes = await authFetch('/api/logs'); // Fetches all logs
+        const logsData = await logsRes.json();
+        const sortedLogs = (logsData.logs || []).sort((a, b) => a.date.localeCompare(b.date));
 
-async function loadAnalytics(){
-  try{
-    const res = await authFetch('/api/cycles-summary');
-    const summary = await res.json();
+        // MOOD TREND
+        let moodPts = [];
+        let painPts = [];
 
-    document.getElementById('statCyclesLogged').textContent = summary.cyclesLogged || '0';
-    document.getElementById('statAvgCycle').textContent = summary.cyclesLogged >= 2 ? summary.avgCycleLength : '—';
-    document.getElementById('statLongestCycle').textContent = summary.longestCycle != null ? summary.longestCycle : '—';
-    document.getElementById('statAvgPeriod').textContent = summary.cyclesLogged ? summary.avgPeriodLength : '—';
-  }catch(e){ /* offline: leave placeholders */ }
-}
+        // Values mapped 0 to 10
+        const moodMap = { 'Sad': 1, 'Meh': 3, 'Fine': 5, 'Good': 7.5, 'Great': 10 };
 
-requireAuth(loadAnalytics);
-</script>
+        let logIdx = 0;
+        Array.from({ length: 15 }).forEach((_, i) => {
+          // Just plotting the last 15 logged days
+          const lg = sortedLogs[Math.max(0, sortedLogs.length - 15) + i];
+          if (lg) {
+            if (lg.mood) {
+              const v = moodMap[lg.mood] || 5;
+              moodPts.push(`${i * 20},${80 - (v * 6)}`);
+            }
+            if (lg.pain != null) {
+              painPts.push(`${i * 20},${80 - (lg.pain * 6)}`);
+            }
+          }
+        });
+
+        // Write SVG polyline (if length == 1, duplicate it so it renders a dot/line)
+        if (moodPts.length === 1) moodPts.push(`20,${moodPts[0].split(',')[1]}`);
+        if (painPts.length === 1) painPts.push(`20,${painPts[0].split(',')[1]}`);
+
+        if (moodPts.length) {
+          document.querySelector('.line-chart-svg polyline[stroke="#D89FB6"]').setAttribute('points', moodPts.join(' '));
+        }
+        if (painPts.length) {
+          document.querySelector('.line-chart-svg polyline[stroke="#C97C7C"]').setAttribute('points', painPts.join(' '));
+        }
+
+        // CYCLE LENGTHS
+        const cycleBars = document.getElementById('cycleBars');
+        const cycleLabels = document.getElementById('cycleLabels');
+        if (summary.cycles && summary.cycles.length > 1) {
+          let gaps = [];
+          let labels = [];
+          for (let i = 1; i < summary.cycles.length; i++) {
+            const prev = new Date(summary.cycles[i - 1].startDate);
+            const cur = new Date(summary.cycles[i].startDate);
+            gaps.push(Math.round((cur - prev) / 86400000));
+            labels.push(cur.toLocaleString('en-US', { month: 'short' }));
+          }
+          const recentGaps = gaps.slice(-6);
+          const recentLabels = labels.slice(-6);
+
+          cycleBars.innerHTML = '';
+          cycleLabels.innerHTML = '';
+
+          const maxGap = Math.max(...summary.cycles.map(() => 45), ...recentGaps); // scale to max 45 or higher
+          recentGaps.forEach(g => {
+            const pct = Math.min((g / maxGap) * 100, 100);
+            cycleBars.innerHTML += `<div class="bar" style="height:${pct}%;"></div>`;
+          });
+          recentLabels.forEach(l => {
+            cycleLabels.innerHTML += `<span>${l}</span>`;
+          });
+        } else {
+          cycleBars.innerHTML = '<div style="width:100%; text-align:center; color:rgba(255,255,255,0.4); font-size:12px; margin-top:20px;">Need at least 2 cycles logged</div>';
+          cycleLabels.innerHTML = '';
+        }
+
+        // LIFESTYLE BARS (Sleep, Stress, Exercise, Water) - Taking Today's data or last logged day
+        const latestLog = sortedLogs[sortedLogs.length - 1]; // get the very last logged date
+        if (latestLog) {
+          const bars = document.getElementById('lifestyleBars').children;
+
+          // Sleep: mapped up to 10 hours for 100%
+          let sleepPct = Math.min((latestLog.sleep || 0) * 10, 100);
+          bars[0].style.height = sleepPct + '%';
+
+          // Stress: Low = 20%, Mod = 60%, High = 95%
+          let stressPct = 0;
+          if (latestLog.stress === 'High') stressPct = 95;
+          else if (latestLog.stress === 'Moderate') stressPct = 60;
+          else if (latestLog.stress === 'Low') stressPct = 20;
+          bars[1].style.height = stressPct + '%';
+
+          // Exercise: None = 10%, Light = 40%, Yoga = 60%, Cardio/Strength = 90%
+          let exPct = 10;
+          const exMap = { 'None': 10, 'Light Walk': 40, 'Yoga': 60, 'Cardio': 90, 'Strength': 90 };
+          if (latestLog.exercise && exMap[latestLog.exercise]) exPct = exMap[latestLog.exercise];
+          bars[2].style.height = exPct + '%';
+
+          // Water: 8 glasses = 100%
+          let waterPct = Math.min((latestLog.water || 0) * (100 / 8), 100);
+          bars[3].style.height = waterPct + '%';
+        }
+
+      } catch (e) { /* offline: leave placeholders */ }
+    }
+
+    requireAuth(loadAnalytics);
+  </script>
 </body>
+
 </html>

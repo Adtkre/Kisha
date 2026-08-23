@@ -189,6 +189,17 @@ async function confirmUnmarkEndPeriod(dateStr) {
 }
 
 /* ============ Calendar (calendar.html) — driven by real data ============ */
+let currentCalDate = new Date();
+
+function prevMonth() {
+  currentCalDate.setMonth(currentCalDate.getMonth() - 1);
+  buildCalendar();
+}
+function nextMonth() {
+  currentCalDate.setMonth(currentCalDate.getMonth() + 1);
+  buildCalendar();
+}
+
 async function buildCalendar() {
   const grid = document.getElementById('calGrid');
   if (!grid) return;
@@ -197,14 +208,13 @@ async function buildCalendar() {
     const el = document.createElement('div'); el.className = 'cal-dow'; el.textContent = d; grid.appendChild(el);
   });
 
-  const now = new Date();
-  const year = now.getFullYear(), month = now.getMonth(); // 0-indexed
+  const year = currentCalDate.getFullYear(), month = currentCalDate.getMonth(); // 0-indexed
   const monthStr = year + '-' + String(month + 1).padStart(2, '0');
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const todayStr = todayISO();
   const monthLabelEl = document.getElementById('calMonthLabel');
-  if (monthLabelEl) monthLabelEl.textContent = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  if (monthLabelEl) monthLabelEl.textContent = new Date(year, month, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
   let periodDateSet = new Set();
   let periodEndSet = new Set();

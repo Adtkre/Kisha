@@ -43,7 +43,7 @@
         </div>
       </div>
 
-      <div class="clay log-section">
+      <div class="clay log-section sec-period" style="display:none;">
         <div class="log-label">Flow</div>
         <div class="pill-group" id="logFlow">
           <div class="pill selected" onclick="selectPill(this)">Light</div>
@@ -52,26 +52,36 @@
         </div>
       </div>
 
-      <div class="clay log-section">
-        <div class="log-label">Sleep (hrs)</div>
-        <input type="range" class="slider-input" id="logSleep" min="0" max="12" value="7">
+      <div class="clay log-section sec-period" style="display:none;">
+        <div class="log-label">Pain Level <span id="painValue"
+            style="float:right; color:var(--berry-bush); font-weight:700;">0</span></div>
+        <input type="range" class="slider-input" id="logPain" min="0" max="10" value="0"
+          oninput="document.getElementById('painValue').textContent = this.value">
       </div>
 
       <div class="clay log-section">
-        <div class="log-label">Water Intake</div>
-        <input type="range" class="slider-input" id="logWater" min="0" max="12" value="6">
+        <div class="log-label">Sleep (hrs) <span id="sleepVal"
+            style="float:right; color:var(--berry-bush); font-weight:700;">7</span></div>
+        <input type="range" class="slider-input" id="logSleep" min="0" max="12" value="7"
+          oninput="document.getElementById('sleepVal').textContent = this.value">
+      </div>
+
+      <div class="clay log-section">
+        <div class="log-label">Water Intake <span id="waterVal"
+            style="float:right; color:var(--berry-bush); font-weight:700;">6</span></div>
+        <input type="range" class="slider-input" id="logWater" min="0" max="12" value="6"
+          oninput="document.getElementById('waterVal').textContent = this.value">
       </div>
 
       <div class="clay log-section">
         <div class="log-label">Exercise</div>
-        <select id="logExercise"
-          style="width:100%; padding:12px 16px; border-radius:14px; border:1px solid rgba(122,64,77,0.15); background:rgba(255,255,255,0.7);">
-          <option>None</option>
-          <option>Light Walk</option>
-          <option>Yoga</option>
-          <option>Cardio</option>
-          <option>Strength</option>
-        </select>
+        <div class="pill-group" id="logExercise" style="flex-wrap: wrap;">
+          <div class="pill selected" onclick="selectPill(this)" style="min-width: 85px;">None</div>
+          <div class="pill" onclick="selectPill(this)" style="min-width: 85px;">Light Walk</div>
+          <div class="pill" onclick="selectPill(this)" style="min-width: 85px;">Yoga</div>
+          <div class="pill" onclick="selectPill(this)" style="min-width: 85px;">Cardio</div>
+          <div class="pill" onclick="selectPill(this)" style="min-width: 85px;">Strength</div>
+        </div>
       </div>
 
       <div class="clay log-section">
@@ -83,7 +93,7 @@
         </div>
       </div>
 
-      <div class="clay log-section">
+      <div class="clay log-section sec-period" style="display:none;">
         <div class="log-label">Symptoms</div>
         <div class="chip-group" id="logSymptoms">
           <div class="chip" onclick="toggleChip(this)">Cramps</div>
@@ -103,6 +113,8 @@
       </div>
 
       <button class="clay-btn btn-primary btn-block" id="saveLogBtn" onclick="saveDailyLog()">Save Log</button>
+      <button class="clay-btn btn-secondary btn-block" id="clearLogBtn" onclick="clearDailyLog()"
+        style="margin-top:12px; display:none; color:var(--rose-red); border-color:var(--rose-red);">Clear Log</button>
     </div>
   </div>
 
@@ -200,22 +212,56 @@
       });
     }
 
+    let isPeriodDay = false;
     async function loadTodayLog() {
       try {
-        const res = await authFetch('/api/logs/' + logDate);
-        const data = await res.json();
-        if (!data.log) return;
+        const [periodRes, logRes] = await Promise.all([
+          authFetch('/api/period-days'),
+          authFetch('/api/logs/' + logDate)
+        ]);
+
+        const periodData = await periodRes.json();
+        isPeriodDay = (periodData.dates || []).includes(logDate);
+
+        const periodElements = document.querySelectorAll('.sec-period');
+        periodElements.forEach(el => el.style.display = isPeriodDay ? 'block' : 'none');
+
+        const data = await logRes.json();
+        if (!data.log) {
+          document.getElementById('clearLogBtn').style.display = 'none';
+          return;
+        }
+        document.getElementById('clearLogBtn').style.display = 'block';
         const log = data.log;
+
         if (log.mood) applyEmojiValue(document.getElementById('logMood'), log.mood);
-        if (log.flow) applyPillValue(document.getElementById('logFlow'), log.flow);
-        if (log.sleep != null) document.getElementById('logSleep').value = log.sleep;
-        if (log.water != null) document.getElementById('logWater').value = log.water;
-        if (log.exercise) document.getElementById('logExercise').value = log.exercise;
+        if (log.flow && isPeriodDay) applyPillValue(document.getElementById('logFlow'), log.flow);
+        if (log.pain != null && isPeriodDay) {
+          document.getElementById('logPain').value = log.pain;
+          document.getElementById('painValue').textContent = log.pain;
+        }
+        if (log.sleep != null) {
+          document.getElementById('logSleep').value = log.sleep;
+          document.getElementById('sleepVal').textContent = log.sleep;
+        }
+        if (log.water != null) {
+          document.getElementById('logWater').value = log.water;
+          document.getElementById('waterVal').textContent = log.water;
+        }
+        if (log.exercise) applyPillValue(document.getElementById('logExercise'), log.exercise);
         if (log.stress) applyPillValue(document.getElementById('logStress'), log.stress);
-        if (log.symptoms) applyChips(document.getElementById('logSymptoms'), log.symptoms);
+        if (log.symptoms && isPeriodDay) applyChips(document.getElementById('logSymptoms'), log.symptoms);
         if (log.notes) document.getElementById('logNotes').value = log.notes;
         toast('Loaded your saved entry for today');
-      } catch (e) { /* nothing saved yet, or offline — leave defaults */ }
+      } catch (e) {
+        // Fallback for period status if offline or just no log yet
+        if (!isPeriodDay) {
+          authFetch('/api/period-days').then(r => r.json()).then(p => {
+            isPeriodDay = (p.dates || []).includes(logDate);
+            document.querySelectorAll('.sec-period').forEach(el => el.style.display = isPeriodDay ? 'block' : 'none');
+          }).catch(() => { });
+        }
+      }
     }
 
     async function saveDailyLog() {
@@ -225,22 +271,41 @@
       const payload = {
         date: logDate,
         mood: selectedEmojiValue(document.getElementById('logMood')),
-        flow: selectedPillValue(document.getElementById('logFlow')),
         sleep: Number(document.getElementById('logSleep').value),
         water: Number(document.getElementById('logWater').value),
-        exercise: document.getElementById('logExercise').value,
+        exercise: selectedPillValue(document.getElementById('logExercise')),
         stress: selectedPillValue(document.getElementById('logStress')),
-        symptoms: selectedChips(document.getElementById('logSymptoms')),
         notes: document.getElementById('logNotes').value
       };
+
+      if (document.querySelector('.sec-period').style.display !== 'none') {
+        payload.flow = selectedPillValue(document.getElementById('logFlow'));
+        payload.pain = Number(document.getElementById('logPain').value);
+        payload.symptoms = selectedChips(document.getElementById('logSymptoms'));
+      }
+
       try {
         await authFetch('/api/logs', { method: 'POST', body: JSON.stringify(payload) });
-        toast('Log saved ✓');
+        toast('Log saved');
       } catch (e) {
         toast('Could not save — is the server running?');
       }
       btn.textContent = 'Save Log';
       btn.disabled = false;
+    }
+
+    async function clearDailyLog() {
+      if (!confirm('Are you sure you want to delete this log?')) return;
+      const btn = document.getElementById('clearLogBtn');
+      btn.textContent = 'Clearing...';
+      try {
+        await authFetch('/api/logs/' + logDate, { method: 'DELETE' });
+        toast('Log cleared');
+        setTimeout(() => location.reload(), 1000);
+      } catch (e) {
+        toast('Could not clear log');
+        btn.textContent = 'Clear Log';
+      }
     }
 
     requireAuth(() => { loadTodayLog(); });

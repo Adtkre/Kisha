@@ -339,17 +339,23 @@ app.get('/api/logs/:date', requireAuth, async (req, res) => {
   res.json({ log: result.rows.length ? rowToLog(result.rows[0]) : null });
 });
 
+app.delete('/api/logs/:date', requireAuth, async (req, res) => {
+  await pool.query('DELETE FROM logs WHERE user_id = $1 AND date = $2', [req.userId, req.params.date]);
+  res.json({ ok: true, date: req.params.date });
+});
+
 app.post('/api/logs', requireAuth, async (req, res) => {
-  const { date, mood, flow, sleep, water, exercise, stress, symptoms, notes } = req.body || {};
+  const { date, mood, flow, pain, sleep, water, exercise, stress, symptoms, notes } = req.body || {};
   if (!date) return res.status(400).json({ error: 'date is required' });
   if (date > todayStr()) return res.status(400).json({ error: "You can't log a future date" });
 
   const result = await pool.query(
-    `INSERT INTO logs (user_id, date, mood, flow, sleep, water, exercise, stress, symptoms, notes)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+    `INSERT INTO logs (user_id, date, mood, flow, pain, sleep, water, exercise, stress, symptoms, notes)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
      ON CONFLICT (user_id, date) DO UPDATE SET
        mood = COALESCE(EXCLUDED.mood, logs.mood),
        flow = COALESCE(EXCLUDED.flow, logs.flow),
+       pain = COALESCE(EXCLUDED.pain, logs.pain),
        sleep = COALESCE(EXCLUDED.sleep, logs.sleep),
        water = COALESCE(EXCLUDED.water, logs.water),
        exercise = COALESCE(EXCLUDED.exercise, logs.exercise),
@@ -357,8 +363,8 @@ app.post('/api/logs', requireAuth, async (req, res) => {
        symptoms = COALESCE(EXCLUDED.symptoms, logs.symptoms),
        notes = COALESCE(EXCLUDED.notes, logs.notes)
      RETURNING *`,
-    [req.userId, date, mood || null, flow || null, sleep ?? null, water ?? null,
-     exercise || null, stress || null, JSON.stringify(symptoms || []), notes || null]
+    [req.userId, date, mood || null, flow || null, pain ?? null, sleep ?? null, water ?? null,
+    exercise || null, stress || null, JSON.stringify(symptoms || []), notes || null]
   );
   res.json({ log: rowToLog(result.rows[0]) });
 });
@@ -370,6 +376,7 @@ function rowToLog(row) {
     date: toDateStr(new Date(row.date)),
     mood: row.mood,
     flow: row.flow,
+    pain: row.pain,
     sleep: row.sleep,
     water: row.water,
     exercise: row.exercise,
@@ -378,6 +385,53 @@ function rowToLog(row) {
     notes: row.notes
   };
 }
+
+app.get('/api/export/csv', requireAuth, async (req, res) => {
+  const [logsRes, pDaysRes, pEndsRes] = await Promise.all([
+    pool.query('SELECT * FROM logs WHERE user_id = $1 ORDER BY date ASC', [req.userId]),
+    pool.query('SELECT date FROM period_days WHERE user_id = $1', [req.userId]),
+    pool.query('SELECT date FROM period_end_dates WHERE user_id = $1', [req.userId])
+  ]);
+
+  const map = new Map();
+  const addDate = (d) => {
+    if (!map.has(d)) map.set(d, { date: d });
+    return map.get(d);
+  };
+
+  for (const r of logsRes.rows) {
+    const d = toDateStr(new Date(r.date));
+    const obj = addDate(d);
+    obj.mood = r.mood || '';
+    obj.flow = r.flow || '';
+    obj.pain = r.pain != null ? r.pain : '';
+    obj.sleep = r.sleep != null ? r.sleep : '';
+    obj.water = r.water != null ? r.water : '';
+    obj.exercise = r.exercise || '';
+    obj.stress = r.stress || '';
+    obj.symptoms = (r.symptoms || []).join(', ');
+    obj.notes = (r.notes || '').replace(/"/g, '""').replace(/\n/g, ' ');
+  }
+
+  for (const r of pDaysRes.rows) {
+    addDate(toDateStr(new Date(r.date))).isPeriodDay = 'Yes';
+  }
+  for (const r of pEndsRes.rows) {
+    addDate(toDateStr(new Date(r.date))).isPeriodEnd = 'Yes';
+  }
+
+  const sortedDates = Array.from(map.keys()).sort();
+
+  let csv = 'Date,Is_Period_Day,Is_Period_End,Mood,Flow,Pain,Sleep_Hrs,Water_Glasses,Exercise,Stress,Symptoms,Notes\n';
+  for (const d of sortedDates) {
+    const o = map.get(d);
+    csv += `"${d}","${o.isPeriodDay || ''}","${o.isPeriodEnd || ''}","${o.mood || ''}","${o.flow || ''}","${o.pain}","${o.sleep}","${o.water}","${o.exercise || ''}","${o.stress || ''}","${o.symptoms || ''}","${o.notes || ''}"\n`;
+  }
+
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', 'attachment; filename="kisha_data.csv"');
+  res.send(csv);
+});
 
 /* ================= static frontend ================= */
 app.use(express.static(path.join(__dirname, '..')));

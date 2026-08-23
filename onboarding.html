@@ -95,12 +95,12 @@
               oninput="document.getElementById('sleepVal').textContent = this.value">
           </div>
           <div class="field"><label>Exercise Frequency</label>
-            <select id="obExercise">
-              <option>Rarely</option>
-              <option>1–2×/week</option>
-              <option>3–4×/week</option>
-              <option>Daily</option>
-            </select>
+            <div class="pill-group" id="obExercise" style="flex-wrap: wrap;">
+              <div class="pill selected" onclick="selectPill(this)" style="min-width: 85px;">Rarely</div>
+              <div class="pill" onclick="selectPill(this)" style="min-width: 85px;">1–2×/week</div>
+              <div class="pill" onclick="selectPill(this)" style="min-width: 85px;">3–4×/week</div>
+              <div class="pill" onclick="selectPill(this)" style="min-width: 85px;">Daily</div>
+            </div>
           </div>
           <div class="field"><label>Stress Level</label>
             <div class="segmented">
@@ -199,7 +199,9 @@
 
       const exerciseSelect = document.getElementById('obExercise');
       if (exerciseSelect && user.exerciseFrequency) {
-        exerciseSelect.value = user.exerciseFrequency;
+        exerciseSelect.querySelectorAll('.pill').forEach(p => {
+          p.classList.toggle('selected', p.textContent.trim() === user.exerciseFrequency);
+        });
       }
 
       const conditions = (user.conditions || '').split(',').map(s => s.trim()).filter(Boolean);
@@ -239,7 +241,7 @@
         weight: document.getElementById('obWeight').value || null,
         avgCycleLength: Number(document.getElementById('obCycleLen').value) || 28,
         avgPeriodLength: Number(document.getElementById('obPeriodLen').value) || 5,
-        exerciseFrequency: document.getElementById('obExercise').value,
+        exerciseFrequency: document.getElementById('obExercise').querySelector('.pill.selected') ? document.getElementById('obExercise').querySelector('.pill.selected').textContent : null,
         conditions: conditions
       };
 

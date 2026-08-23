@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS logs (
   date      DATE NOT NULL,
   mood      TEXT,
   flow      TEXT,
+  pain      NUMERIC,
   sleep     NUMERIC,
   water     NUMERIC,
   exercise  TEXT,

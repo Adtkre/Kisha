@@ -59,6 +59,8 @@
       <button class="clay-btn btn-secondary btn-block" id="adminEditOnboardingBtn"
         onclick="window.location.href='onboarding.html?edit=1'" style="margin-top:12px; display:none;">Edit
         Onboarding</button>
+      <button class="clay-btn btn-secondary btn-block" style="margin-top:12px;" onclick="downloadData()">Download My
+        Data (CSV)</button>
       <button class="clay-btn btn-secondary btn-block"
         style="margin-top:12px; color:var(--rose-red); border-color:var(--rose-red);" onclick="logout()">Logout</button>
     </div>
@@ -152,13 +154,34 @@
       btn.disabled = false;
     }
 
-    requireAuth(function (user) {
+    function loadProfile(user) {
       fillProfile(user);
       const adminBtn = document.getElementById('adminEditOnboardingBtn');
       if (adminBtn && isAdminUser(user)) {
         adminBtn.style.display = 'block';
       }
-    });
+    }
+
+    async function downloadData() {
+      try {
+        const res = await authFetch('/api/export/csv');
+        if (!res.ok) throw new Error('Failed to fetch data');
+        const text = await res.text();
+        const blob = new Blob([text], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'kisha_data.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch (e) {
+        toast('Could not download data. Are you online?');
+      }
+    }
+
+    requireAuth(loadProfile);
   </script>
 </body>
 
