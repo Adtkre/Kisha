@@ -1,178 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Onboarding</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Onboarding</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
-<div class="blob blob1"></div>
-<div class="blob blob2"></div>
-<div class="blob blob3"></div>
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
 
-<div id="app">
-  <div class="screen active" id="screen-onboarding">
+  <div id="app">
+    <div class="screen active"
+      style="display:flex; align-items:center; min-height:100vh; padding:20px; max-width: 500px;"
+      id="screen-onboarding">
 
-    <div class="progress-track"><div class="progress-fill" id="obProgress" style="width:20%;"></div></div>
+      <div class="ob-stack" id="obStack">
+        <!-- step 1 -->
+        <div class="ob-card active" data-step="1">
+          <div class="ob-dashes">
+            <div class="dash active"></div>
+            <div class="dash"></div>
+            <div class="dash"></div>
+            <div class="dash"></div>
+            <div class="dash"></div>
+          </div>
+          <div class="ob-title">About You</div>
+          <div class="ob-sub">Let's get to know you a little</div>
+          <div class="field"><label>Name</label><input type="text" id="obName" placeholder="Aditi"></div>
+          <div class="field"><label>Age</label><input type="number" id="obAge" placeholder="24"></div>
+          <div class="field"><label>Height (cm)</label><input type="number" id="obHeight" placeholder="162"></div>
+          <div class="field"><label>Weight (kg)</label><input type="number" id="obWeight" placeholder="55"></div>
 
-    <div class="glass" style="padding:26px;">
-      <!-- step 1 -->
-      <div class="ob-step active" data-step="1">
-        <div class="ob-title">About You</div>
-        <div class="ob-sub">Let's get to know you a little</div>
-        <div class="field"><label>Name</label><input type="text" id="obName" placeholder="Aditi"></div>
-        <div class="field"><label>Age</label><input type="number" id="obAge" placeholder="24"></div>
-        <div class="field"><label>Height (cm)</label><input type="number" id="obHeight" placeholder="162"></div>
-        <div class="field"><label>Weight (kg)</label><input type="number" id="obWeight" placeholder="55"></div>
-      </div>
-      <!-- step 2 -->
-      <div class="ob-step" data-step="2">
-        <div class="ob-title">Cycle Information</div>
-        <div class="ob-sub">Help us understand your rhythm</div>
-        <div class="field"><label>Last Period Start</label><input type="date" id="obPeriodStart"></div>
-        <div class="field"><label>Last Period End</label><input type="date" id="obPeriodEnd"></div>
-        <div class="field"><label>Average Cycle Length (days)</label><input type="number" id="obCycleLen" placeholder="28"></div>
-        <div class="field"><label>Average Period Length (days)</label><input type="number" id="obPeriodLen" placeholder="5"></div>
-        <div class="field"><label>Regularity</label>
-          <div class="pill-group"><div class="pill selected" onclick="selectPill(this)">Regular</div><div class="pill" onclick="selectPill(this)">Irregular</div></div>
-        </div>
-      </div>
-      <!-- step 3 -->
-      <div class="ob-step" data-step="3">
-        <div class="ob-title">Lifestyle</div>
-        <div class="ob-sub">A quick snapshot of your habits</div>
-        <div class="field"><label>Average Sleep (hrs)</label><input type="range" class="slider-input" min="0" max="12" value="7"></div>
-        <div class="field"><label>Exercise Frequency</label>
-          <select id="obExercise"><option>Rarely</option><option>1–2×/week</option><option>3–4×/week</option><option>Daily</option></select>
-        </div>
-        <div class="field"><label>Stress Level</label>
-          <div class="segmented"><div class="seg-opt" onclick="selectSeg(this)">Low</div><div class="seg-opt selected" onclick="selectSeg(this)">Moderate</div><div class="seg-opt" onclick="selectSeg(this)">High</div></div>
-        </div>
-        <div class="field"><label>Water Intake (glasses/day)</label><input type="number" placeholder="8"></div>
-      </div>
-      <!-- step 4 -->
-      <div class="ob-step" data-step="4">
-        <div class="ob-title">Health</div>
-        <div class="ob-sub">Optional — helps us personalize insights</div>
-        <div class="field"><label>Conditions</label>
-          <div class="chip-group" id="obConditions">
-            <div class="chip" onclick="toggleChip(this)">PCOS</div>
-            <div class="chip" onclick="toggleChip(this)">Birth Control</div>
-            <div class="chip" onclick="toggleChip(this)">Pregnancy</div>
+          <div class="ob-foot">
+            <div></div> <!-- Spacer -->
+            <button class="btn-next" onclick="obChange(1)">Next</button>
           </div>
         </div>
-        <div class="field"><label>Medications</label><textarea rows="3" placeholder="List any medications..."></textarea></div>
-      </div>
-      <!-- step 5 -->
-      <div class="ob-step" data-step="5">
-        <div class="ob-complete">
-          <div class="check-anim">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M4 12l6 6L20 6"/></svg>
-          </div>
-          <div class="ob-title" style="margin-bottom:6px;">Welcome to Kisha 🌸</div>
-          <div class="ob-sub">Everything's set. Let's take a look at your dashboard.</div>
-          <button class="clay-btn btn-primary btn-block" id="obFinishBtn" onclick="saveOnboarding()">Go to Dashboard</button>
-        </div>
-      </div>
 
-      <div class="ob-nav" id="obNav">
-        <button class="clay-btn btn-secondary" style="flex:1;" id="obBack" onclick="obChange(-1)">Back</button>
-        <button class="clay-btn btn-primary" style="flex:1;" id="obNext" onclick="obChange(1)">Continue</button>
+        <!-- step 2 -->
+        <div class="ob-card next-1" data-step="2">
+          <div class="ob-dashes">
+            <div class="dash active"></div>
+            <div class="dash active"></div>
+            <div class="dash"></div>
+            <div class="dash"></div>
+            <div class="dash"></div>
+          </div>
+          <div class="ob-title">Cycle Information</div>
+          <div class="ob-sub">Help us understand your rhythm</div>
+          <div class="field"><label>Last Period Start</label><input type="date" id="obPeriodStart"></div>
+          <div class="field"><label>Last Period End</label><input type="date" id="obPeriodEnd"></div>
+          <div class="field"><label>Average Cycle Length (days)</label><input type="number" id="obCycleLen"
+              placeholder="28"></div>
+          <div class="field"><label>Average Period Length (days)</label><input type="number" id="obPeriodLen"
+              placeholder="5"></div>
+          <div class="field"><label>Regularity</label>
+            <div class="pill-group">
+              <div class="pill selected" onclick="selectPill(this)">Regular</div>
+              <div class="pill" onclick="selectPill(this)">Irregular</div>
+            </div>
+          </div>
+
+          <div class="ob-foot">
+            <button class="btn-back" onclick="obChange(-1)">Back</button>
+            <button class="btn-next" onclick="obChange(1)">Next</button>
+          </div>
+        </div>
+
+        <!-- step 3 -->
+        <div class="ob-card next-2" data-step="3">
+          <div class="ob-dashes">
+            <div class="dash active"></div>
+            <div class="dash active"></div>
+            <div class="dash active"></div>
+            <div class="dash"></div>
+            <div class="dash"></div>
+          </div>
+          <div class="ob-title">Lifestyle</div>
+          <div class="ob-sub">A quick snapshot of your habits</div>
+          <div class="field">
+            <label style="display:flex; justify-content:space-between">
+              <span>Average Sleep (hrs)</span> <span id="sleepVal"
+                style="color:var(--berry-bush); font-weight:800;">7</span>
+            </label>
+            <input type="range" class="slider-input" id="obSleep" min="0" max="12" value="7"
+              oninput="document.getElementById('sleepVal').textContent = this.value">
+          </div>
+          <div class="field"><label>Exercise Frequency</label>
+            <select id="obExercise">
+              <option>Rarely</option>
+              <option>1–2×/week</option>
+              <option>3–4×/week</option>
+              <option>Daily</option>
+            </select>
+          </div>
+          <div class="field"><label>Stress Level</label>
+            <div class="segmented">
+              <div class="seg-opt" onclick="selectSeg(this)">Low</div>
+              <div class="seg-opt selected" onclick="selectSeg(this)">Moderate</div>
+              <div class="seg-opt" onclick="selectSeg(this)">High</div>
+            </div>
+          </div>
+          <div class="field"><label>Water Intake (glasses/day)</label><input type="number" placeholder="8"></div>
+
+          <div class="ob-foot">
+            <button class="btn-back" onclick="obChange(-1)">Back</button>
+            <button class="btn-next" onclick="obChange(1)">Next</button>
+          </div>
+        </div>
+
+        <!-- step 4 -->
+        <div class="ob-card next-more" data-step="4">
+          <div class="ob-dashes">
+            <div class="dash active"></div>
+            <div class="dash active"></div>
+            <div class="dash active"></div>
+            <div class="dash active"></div>
+            <div class="dash"></div>
+          </div>
+          <div class="ob-title">Health</div>
+          <div class="ob-sub">Optional — helps us personalize insights</div>
+          <div class="field"><label>Conditions</label>
+            <div class="chip-group" id="obConditions">
+              <div class="chip" onclick="toggleChip(this)">PCOS</div>
+              <div class="chip" onclick="toggleChip(this)">Birth Control</div>
+              <div class="chip" onclick="toggleChip(this)">Pregnancy</div>
+            </div>
+          </div>
+          <div class="field"><label>Medications</label><textarea rows="3"
+              placeholder="List any medications..."></textarea></div>
+
+          <div class="ob-foot">
+            <button class="btn-back" onclick="obChange(-1)">Back</button>
+            <button class="btn-next" onclick="obChange(1)">Next</button>
+          </div>
+        </div>
+
+        <!-- step 5 -->
+        <div class="ob-card next-more" data-step="5">
+          <div class="ob-dashes">
+            <div class="dash active"></div>
+            <div class="dash active"></div>
+            <div class="dash active"></div>
+            <div class="dash active"></div>
+            <div class="dash active"></div>
+          </div>
+          <div class="ob-complete">
+            <div class="check-anim">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3">
+                <path d="M4 12l6 6L20 6" />
+              </svg>
+            </div>
+            <div class="ob-title" style="margin-bottom:6px;">Welcome to Kisha</div>
+            <div class="ob-sub">Everything's set. Let's take a look at your dashboard.</div>
+          </div>
+
+          <div class="ob-foot" style="justify-content:center;">
+            <button class="btn-next btn-block" id="obFinishBtn" style="padding-left:14px; padding-right:14px;"
+              onclick="saveOnboarding()">Go to Dashboard</button>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
-</div>
 
 
-<div id="toast" style="position:fixed; top:20px; left:50%; transform:translateX(-50%) translateY(-100px); background:var(--weathervane); color:#F0D2DE; padding:12px 22px; border-radius:16px; font-size:13.5px; font-weight:600; z-index:200; transition:transform .35s ease; box-shadow:0 8px 24px rgba(0,0,0,0.25);"></div>
+  <div id="toast"
+    style="position:fixed; top:20px; left:50%; transform:translateX(-50%) translateY(-100px); background:var(--weathervane); color:#F0D2DE; padding:12px 22px; border-radius:16px; font-size:13.5px; font-weight:600; z-index:200; transition:transform .35s ease; box-shadow:0 8px 24px rgba(0,0,0,0.25);">
+  </div>
 
-<script src="js/main.js"></script>
-<script src="js/auth.js"></script>
-<script>
-function populateOnboardingFields(user){
-  if (!user) return;
-  const fields = {
-    obName: user.name || '',
-    obAge: user.age || '',
-    obHeight: user.height || '',
-    obWeight: user.weight || '',
-    obCycleLen: user.avgCycleLength || 28,
-    obPeriodLen: user.avgPeriodLength || 5,
-  };
+  <script src="js/main.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    function populateOnboardingFields(user) {
+      if (!user) return;
+      const fields = {
+        obName: user.name || '',
+        obAge: user.age || '',
+        obHeight: user.height || '',
+        obWeight: user.weight || '',
+        obCycleLen: user.avgCycleLength || 28,
+        obPeriodLen: user.avgPeriodLength || 5,
+      };
 
-  Object.entries(fields).forEach(([id, value]) => {
-    const el = document.getElementById(id);
-    if (el) el.value = value;
-  });
+      Object.entries(fields).forEach(([id, value]) => {
+        const el = document.getElementById(id);
+        if (el) el.value = value;
+      });
 
-  const exerciseSelect = document.getElementById('obExercise');
-  if (exerciseSelect && user.exerciseFrequency) {
-    exerciseSelect.value = user.exerciseFrequency;
-  }
+      const exerciseSelect = document.getElementById('obExercise');
+      if (exerciseSelect && user.exerciseFrequency) {
+        exerciseSelect.value = user.exerciseFrequency;
+      }
 
-  const conditions = (user.conditions || '').split(',').map(s => s.trim()).filter(Boolean);
-  if (conditions.length) {
-    document.querySelectorAll('#obConditions .chip').forEach(chip => {
-      const txt = chip.textContent.trim();
-      chip.classList.toggle('selected', conditions.includes(txt));
-    });
-  }
-}
-
-requireAuth(function(user){
-  const params = new URLSearchParams(window.location.search);
-  const allowEdit = params.get('edit') === '1';
-
-  if (allowEdit && !isAdminUser(user)) {
-    window.location.href = 'dashboard.html';
-    return;
-  }
-
-  if (allowEdit && user) {
-    populateOnboardingFields(user);
-  }
-});
-
-async function saveOnboarding(){
-  const btn = document.getElementById('obFinishBtn');
-  btn.textContent = 'Saving...';
-  btn.disabled = true;
-
-  const conditions = Array.from(document.querySelectorAll('#obConditions .chip.selected')).map(c=>c.textContent).join(', ');
-
-  const profile = {
-    name: document.getElementById('obName').value || undefined,
-    age: document.getElementById('obAge').value || null,
-    height: document.getElementById('obHeight').value || null,
-    weight: document.getElementById('obWeight').value || null,
-    avgCycleLength: Number(document.getElementById('obCycleLen').value) || 28,
-    avgPeriodLength: Number(document.getElementById('obPeriodLen').value) || 5,
-    exerciseFrequency: document.getElementById('obExercise').value,
-    conditions: conditions
-  };
-
-  try{
-    await authFetch('/api/me', { method:'PUT', body: JSON.stringify(profile) });
-
-    const startDate = document.getElementById('obPeriodStart').value;
-    const endDate = document.getElementById('obPeriodEnd').value;
-    if(startDate){
-      const res = await authFetch('/api/cycles/start', { method:'POST', body: JSON.stringify({ startDate }) });
-      if(res.ok && endDate){
-        await authFetch('/api/cycles/end', { method:'POST', body: JSON.stringify({ endDate }) });
+      const conditions = (user.conditions || '').split(',').map(s => s.trim()).filter(Boolean);
+      if (conditions.length) {
+        document.querySelectorAll('#obConditions .chip').forEach(chip => {
+          const txt = chip.textContent.trim();
+          chip.classList.toggle('selected', conditions.includes(txt));
+        });
       }
     }
-    window.location.href = 'dashboard.html';
-  }catch(e){
-    toast('Could not save — is the server running?');
-    btn.textContent = 'Go to Dashboard';
-    btn.disabled = false;
-  }
-}
-</script>
+
+    requireAuth(function (user) {
+      const params = new URLSearchParams(window.location.search);
+      const allowEdit = params.get('edit') === '1';
+
+      if (allowEdit && !isAdminUser(user)) {
+        window.location.href = 'dashboard.html';
+        return;
+      }
+
+      if (allowEdit && user) {
+        populateOnboardingFields(user);
+      }
+    });
+
+    async function saveOnboarding() {
+      const btn = document.getElementById('obFinishBtn');
+      btn.textContent = 'Saving...';
+      btn.disabled = true;
+
+      const conditions = Array.from(document.querySelectorAll('#obConditions .chip.selected')).map(c => c.textContent).join(', ');
+
+      const profile = {
+        name: document.getElementById('obName').value || undefined,
+        age: document.getElementById('obAge').value || null,
+        height: document.getElementById('obHeight').value || null,
+        weight: document.getElementById('obWeight').value || null,
+        avgCycleLength: Number(document.getElementById('obCycleLen').value) || 28,
+        avgPeriodLength: Number(document.getElementById('obPeriodLen').value) || 5,
+        exerciseFrequency: document.getElementById('obExercise').value,
+        conditions: conditions
+      };
+
+      try {
+        await authFetch('/api/me', { method: 'PUT', body: JSON.stringify(profile) });
+
+        const startDate = document.getElementById('obPeriodStart').value;
+        const endDate = document.getElementById('obPeriodEnd').value;
+        if (startDate) {
+          const res = await authFetch('/api/cycles/start', { method: 'POST', body: JSON.stringify({ startDate }) });
+          if (res.ok && endDate) {
+            await authFetch('/api/cycles/end', { method: 'POST', body: JSON.stringify({ endDate }) });
+          }
+        }
+        window.location.href = 'dashboard.html';
+      } catch (e) {
+        toast('Could not save — is the server running?');
+        btn.textContent = 'Go to Dashboard';
+        btn.disabled = false;
+      }
+    }
+  </script>
 
 </body>
+
 </html>
