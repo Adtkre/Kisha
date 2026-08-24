@@ -7,12 +7,17 @@ WORKDIR /app
 # Copy your whole local repository into the cloud machine
 COPY . .
 
-# 1. Install Python ML dependencies at the root
+# 1. Provide dependencies
+COPY backend/requirements.txt .
 RUN pip install -r requirements.txt
 
-# 2. Go into the server folder and install Node dependencies
-WORKDIR /app/server
+# 2. Go into the backend folder and install Node dependencies
+WORKDIR /app/backend
+COPY backend/package*.json ./
 RUN npm install
+
+# 3. Copy the rest of the backend source code
+COPY backend/ ./
 
 # Start the server (Railway automatically assigns the PORT variable)
 CMD ["node", "server.js"]
