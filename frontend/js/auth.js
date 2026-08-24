@@ -2,7 +2,7 @@
    Talks to the real backend in /server. Token is a JWT
    issued by the server after a real bcrypt password check.
 */
-const API_BASE_URL = 'http://localhost:4000';
+const API_BASE_URL = "https://kisha-production.up.railway.app/";
 const TOKEN_KEY = 'kisha_token';
 const USER_KEY = 'kisha_user';
 const ADMIN_EMAIL = 'catpin@gmail.com';
