@@ -2,40 +2,41 @@
    Talks to the real backend in /server. Token is a JWT
    issued by the server after a real bcrypt password check.
 */
+const API_BASE_URL = 'http://localhost:4000';
 const TOKEN_KEY = 'kisha_token';
 const USER_KEY = 'kisha_user';
 const ADMIN_EMAIL = 'catpin@gmail.com';
 
-function getToken(){ return localStorage.getItem(TOKEN_KEY); }
-function getStoredUser(){
+function getToken() { return localStorage.getItem(TOKEN_KEY); }
+function getStoredUser() {
   try { return JSON.parse(localStorage.getItem(USER_KEY) || 'null'); }
-  catch(e){ return null; }
+  catch (e) { return null; }
 }
-function setSession(token, user){
+function setSession(token, user) {
   localStorage.setItem(TOKEN_KEY, token);
   localStorage.setItem(USER_KEY, JSON.stringify(user));
 }
-function clearSession(){
+function clearSession() {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(USER_KEY);
 }
-function logout(){
+function logout() {
   clearSession();
   window.location.href = 'index.html';
 }
 
 /* Wrapper around fetch that adds the auth header and
    automatically bounces to index.html on 401. */
-async function authFetch(url, options){
+async function authFetch(url, options) {
   options = options || {};
   options.headers = Object.assign({}, options.headers, {
     'Authorization': 'Bearer ' + getToken()
   });
-  if(options.body && !(options.headers['Content-Type'])){
+  if (options.body && !(options.headers['Content-Type'])) {
     options.headers['Content-Type'] = 'application/json';
   }
-  const res = await fetch(url, options);
-  if(res.status === 401){
+  const res = await fetch(API_BASE_URL + url, options);
+  if (res.status === 401) {
     clearSession();
     window.location.href = 'index.html';
     throw new Error('Not authenticated');
@@ -46,32 +47,32 @@ async function authFetch(url, options){
 /* Call at the top of every protected page. Redirects to
    index.html if there's no token, and refreshes the cached
    user object from the server. Returns the user via callback. */
-async function requireAuth(onReady){
-  if(!getToken()){
+async function requireAuth(onReady) {
+  if (!getToken()) {
     window.location.href = 'index.html';
     return;
   }
-  try{
+  try {
     const res = await authFetch('/api/me');
-    if(!res.ok){ logout(); return; }
+    if (!res.ok) { logout(); return; }
     const data = await res.json();
     localStorage.setItem(USER_KEY, JSON.stringify(data.user));
-    if(onReady) onReady(data.user);
-  }catch(e){
+    if (onReady) onReady(data.user);
+  } catch (e) {
     // authFetch already redirects on 401; for network errors,
     // fall back to the cached user so the page still renders.
     const cached = getStoredUser();
-    if(cached && onReady) onReady(cached);
+    if (cached && onReady) onReady(cached);
   }
 }
 
-function isAdminUser(user){
+function isAdminUser(user) {
   const target = user || getStoredUser();
-  if(!target || !target.email) return false;
+  if (!target || !target.email) return false;
   return String(target.email).trim().toLowerCase() === ADMIN_EMAIL;
 }
 
-function initialsOf(name){
-  if(!name) return '?';
-  return name.trim().split(/\s+/).map(p=>p[0]).slice(0,2).join('').toUpperCase();
+function initialsOf(name) {
+  if (!name) return '?';
+  return name.trim().split(/\s+/).map(p => p[0]).slice(0, 2).join('').toUpperCase();
 }

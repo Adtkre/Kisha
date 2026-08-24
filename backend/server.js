@@ -91,7 +91,9 @@ function publicUser(row) {
   };
 }
 
+const cors = require('cors');
 const app = express();
+app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:3000' }));
 app.use(express.json());
 
 /* ---------- auth middleware ---------- */
@@ -510,8 +512,7 @@ app.get('/api/ml/status', requireAuth, (req, res) => {
   }
 });
 
-/* ================= static frontend ================= */
-app.use(express.static(path.join(__dirname, '..')));
+/* ================= static frontend (Removed for API Decoupling) ================= */
 
 const PORT = process.env.PORT || 4000;
 (async function startServer() {

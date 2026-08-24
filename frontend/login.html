@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+  <a class="back-btn" href="index.html" aria-label="Back to start">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"
+      stroke-linejoin="round">
+      <path d="M15 18l-6-6 6-6" />
+    </svg>
+  </a>
+
+  <div id="app">
+    <div class="screen active" id="screen-login">
+
+      <div class="auth-wrap">
+        <div class="glass auth-card">
+          <div class="logo" style="text-align:center; margin-bottom:20px;">Kisha ✿</div>
+          <div class="auth-title">Welcome back</div>
+          <div class="auth-sub">Login to continue your journey</div>
+          <form id="loginForm">
+            <div class="field"><label>Email</label><input id="loginEmail" type="email" placeholder="you@example.com"
+                required></div>
+            <div class="field"><label>Password</label><input id="loginPassword" type="password" placeholder="••••••••"
+                required minlength="6"></div>
+            <div class="field-row">
+              <label class="checkbox-row mb-0"><input type="checkbox"> Remember me</label>
+              <a href="#">Forgot password?</a>
+            </div>
+            <div id="loginError"
+              style="display:none; background:rgba(201,124,124,0.15); color:var(--rose-red); font-size:12.5px; font-weight:600; padding:10px 14px; border-radius:12px; margin-bottom:16px;">
+            </div>
+            <button type="submit" class="clay-btn btn-primary btn-block" id="loginBtn">Login</button>
+          </form>
+          <div class="auth-switch">Don't have an account? <a onclick="window.location.href='signup.html'">Create
+              Account</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"
+    style="position:fixed; top:20px; left:50%; transform:translateX(-50%) translateY(-100px); background:var(--weathervane); color:#F0D2DE; padding:12px 22px; border-radius:16px; font-size:13.5px; font-weight:600; z-index:200; transition:transform .35s ease; box-shadow:0 8px 24px rgba(0,0,0,0.25);">
+  </div>
+
+  <script src="js/main.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const errBox = document.getElementById('loginError');
+      const btn = document.getElementById('loginBtn');
+      errBox.style.display = 'none';
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      btn.textContent = 'Logging in...';
+      btn.disabled = true;
+      try {
+        const res = await fetch(API_BASE_URL + '/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          errBox.textContent = data.error || 'Login failed. Please try again.';
+          errBox.style.display = 'block';
+          btn.textContent = 'Login';
+          btn.disabled = false;
+          return;
+        }
+        setSession(data.token, data.user);
+        window.location.href = 'dashboard.html';
+      } catch (err) {
+        errBox.textContent = 'Could not reach the server. Is it running? (npm start in /server)';
+        errBox.style.display = 'block';
+        btn.textContent = 'Login';
+        btn.disabled = false;
+      }
+    });
+  </script>
+
+</body>
+
+</html>
