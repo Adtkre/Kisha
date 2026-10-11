@@ -29,11 +29,12 @@ if (!SECRET) {
   process.exit(1);
 }
 
-const ADMIN_EMAIL = 'catpin@gmail.com';
-const ADMIN_PASSWORD = '123456';
-const ADMIN_NAME = 'catpin';
+const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const ADMIN_NAME = process.env.ADMIN_NAME || 'admin';
 
 async function ensureAdminUser() {
+  if (!ADMIN_EMAIL || !ADMIN_PASSWORD) return;
   try {
     const existing = await pool.query('SELECT id FROM users WHERE email = $1', [ADMIN_EMAIL]);
     if (existing.rows.length > 0) return;
@@ -147,7 +148,7 @@ app.post('/api/auth/login', async (req, res) => {
     const normalizedEmail = String(email || '').trim().toLowerCase();
     const inputPassword = String(password || '');
 
-    if (normalizedEmail === ADMIN_EMAIL && inputPassword === ADMIN_PASSWORD) {
+    if (ADMIN_EMAIL && ADMIN_PASSWORD && normalizedEmail === ADMIN_EMAIL && inputPassword === ADMIN_PASSWORD) {
       await ensureAdminUser();
     }
 
