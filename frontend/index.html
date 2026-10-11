@@ -1,214 +1,256 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Kisha — Know Your Body, Beautifully</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://fonts.cdnfonts.com/css/samarkan">
-<link rel="stylesheet" href="css/style.css">
-<style>
-  /* ===== Story slides — Rose Ink / Blush Wine / Petal Dust, unified watermark language ===== */
-  .story-slide.s1{
-    background:
-      radial-gradient(circle at 20% 0%, rgba(255,255,255,0.06), transparent 55%),
-      linear-gradient(165deg, var(--blush-wine) 0%, var(--rose-ink) 55%, #1C0410 130%);
-  }
-  .story-slide.s2{
-    background:
-      radial-gradient(circle at 20% 0%, rgba(255,255,255,0.06), transparent 55%),
-      linear-gradient(165deg, #8E2C4C 0%, var(--blush-wine) 55%, #3B1023 130%);
-  }
-  .story-slide.s3{
-    background:
-      radial-gradient(circle at 20% 0%, rgba(255,255,255,0.08), transparent 55%),
-      linear-gradient(165deg, #D291AA 0%, var(--petal-dust) 55%, #7C3A50 130%);
-  }
-  .story-slide.s1 .story-waves{display:none;} /* replaced by watermark rows below, on every slide */
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Kisha — Know Your Body, Beautifully</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700;800&family=Bebas+Neue&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/samarkan">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ===== Story slides — assets/bg1.png background for all slides ===== */
+    .story-slide,
+    .story-slide.s1,
+    .story-slide.s2,
+    .story-slide.s3 {
+      background: url('assets/bg1.png') center center / cover no-repeat !important;
+    }
 
-  .s1-watermark{
-    position:absolute; inset:0;
-    display:flex; flex-direction:column; justify-content:space-evenly;
-    overflow:hidden; pointer-events:none; z-index:0;
-  }
-  .s1-watermark-row{
-    white-space:nowrap; font-family:'Bebas Neue',sans-serif; font-weight:400;
-    font-size:clamp(62px, 20vw, 94px); letter-spacing:1px;
-    color:rgba(255,255,255,0.1); text-transform:uppercase; text-align:center;
-    transform:scaleY(1.4);
-  }
+    .story-slide.s1 .story-waves {
+      display: none;
+    }
 
-  .s1-content{
-    position:relative; z-index:2; height:100%;
-    display:flex; align-items:center; justify-content:center;
-    padding:0 32px;
-  }
-  .s1-wordmark{
-    font-family:'Samarkan','Playfair Display',serif;
-    font-size:clamp(160px, 22vw, 118px);
-    color:#ffffff; text-align:center; line-height:1;
-    text-shadow:0 6px 24px rgba(0,0,0,0.28);
-    transform:translateX(-5%);
-  }
-  /* All three slides now sit on dark jewel-tone backgrounds, so the progress bar + topbar stay light throughout */
-  #storyViewport.on-dark .story-seg{ background:rgba(255,255,255,0.22); }
-  #storyViewport.on-dark .story-seg-fill{ background:#ffffff; }
-  #storyViewport.on-dark .story-topbar .logo{ color:#ffffff; }
-  #storyViewport.on-dark .story-topbar .logo span{ color:rgba(255,255,255,0.85); }
-</style>
+    .s1-content {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 32px;
+    }
+
+    .s1-wordmark {
+      font-family: 'Samarkan', 'Playfair Display', serif;
+      font-size: clamp(160px, 22vw, 118px);
+      color: #ffffff;
+      text-align: center;
+      line-height: 1;
+      text-shadow: 0 6px 24px rgba(0, 0, 0, 0.28);
+      transform: translateX(-5%);
+    }
+
+    .story-content {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 18px !important;
+      text-align: center;
+    }
+
+    .story-heading {
+      font-family: 'Samarkan', 'Playfair Display', serif;
+      font-size: clamp(74px, 20vw, 114px);
+      line-height: 0.95;
+      color: #ffffff;
+      text-align: center;
+      margin: 0;
+      text-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+      max-width: 100%;
+      box-sizing: border-box;
+      padding: 0;
+      word-break: normal;
+      overflow-wrap: normal;
+    }
+
+    .story-slide.s2 .story-heading {
+      font-size: clamp(86px, 24vw, 134px);
+      line-height: 0.92;
+    }
+
+    .story-cta {
+      position: absolute;
+      bottom: 34px;
+      left: 0;
+      right: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      margin: 0;
+      z-index: 40;
+    }
+
+    .story-cta-btn {
+      background: #4A1E29 !important;
+      color: #ffffff !important;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 15px 64px;
+      border-radius: 22px;
+      text-decoration: none;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+      transition: all 0.2s ease;
+      letter-spacing: 0.3px;
+      display: inline-block;
+    }
+
+    .story-cta-btn:hover {
+      background: #35131C !important;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 34px rgba(0, 0, 0, 0.55);
+    }
+
+    .story-signup-text {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.85);
+      text-align: center;
+    }
+
+    .story-signup-text a {
+      color: #ffffff;
+      font-weight: 700;
+      text-decoration: underline;
+    }
+
+    /* All three slides now sit on dark jewel-tone backgrounds, so the progress bar + topbar stay light throughout */
+    #storyViewport.on-dark .story-seg {
+      background: rgba(255, 255, 255, 0.22);
+    }
+
+    #storyViewport.on-dark .story-seg-fill {
+      background: #ffffff;
+    }
+
+    #storyViewport.on-dark .story-topbar .logo {
+      color: #ffffff;
+    }
+
+    #storyViewport.on-dark .story-topbar .logo span {
+      color: rgba(255, 255, 255, 0.85);
+    }
+  </style>
 </head>
+
 <body class="story-body">
 
-<div class="story-viewport" id="storyViewport">
+  <div class="story-viewport" id="storyViewport">
 
-  <div class="story-progress" id="storyProgress">
-    <div class="story-seg" data-i="0"><span class="story-seg-fill"></span></div>
-    <div class="story-seg" data-i="1"><span class="story-seg-fill"></span></div>
-    <div class="story-seg" data-i="2"><span class="story-seg-fill"></span></div>
-  </div>
-
-  <div class="story-topbar">
-    <div class="logo">Kisha</div>
-  </div>
-
-  <div class="story-slides" id="storySlides">
-
-    
-    <div class="story-slide s1">
-      <div class="s1-watermark" aria-hidden="true">
-        <div class="s1-watermark-row">BODY RHYTHM</div>
-        <div class="s1-watermark-row">BODY RHYTHM</div>
-        <div class="s1-watermark-row">BODY RHYTHM</div>
-        <div class="s1-watermark-row">BODY RHYTHM</div>
-        <div class="s1-watermark-row">BODY RHYTHM</div>
-        <div class="s1-watermark-row">BODY RHYTHM</div>
-        <div class="s1-watermark-row">BODY RHYTHM</div>
-      </div>
-      <div class="s1-content">
-        <div class="s1-wordmark">Kisha</div>
-      </div>
-      <div class="story-hint">Tap to continue →</div>
+    <div class="story-progress" id="storyProgress">
+      <div class="story-seg" data-i="0"><span class="story-seg-fill"></span></div>
+      <div class="story-seg" data-i="1"><span class="story-seg-fill"></span></div>
+      <div class="story-seg" data-i="2"><span class="story-seg-fill"></span></div>
     </div>
 
-    <!-- SLIDE 2 — Track Boldly -->
-    <div class="story-slide s2">
-      <div class="story-watermark" aria-hidden="true">
-        <div class="story-watermark-row">TRACK BOLDLY</div>
-        <div class="story-watermark-row">TRACK BOLDLY</div>
-        <div class="story-watermark-row">TRACK BOLDLY</div>
-        <div class="story-watermark-row">TRACK BOLDLY</div>
-        <div class="story-watermark-row">TRACK BOLDLY</div>
-        <div class="story-watermark-row">TRACK BOLDLY</div>
-        <div class="story-watermark-row">TRACK BOLDLY</div>
-      </div>
-      <div class="story-content">
-      <div class="story-dashes"><span></span><span></span></div>
-      <h2 class="story-heading">Track<br>Boldly</h2>
-      <div class="story-icon">
-        <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M60 14c14 20 26 36 26 52a26 26 0 11-52 0c0-16 12-32 26-52z" stroke="#ffffff" stroke-width="2.2" stroke-linejoin="round" opacity="0.95"/>
-          <path d="M38 66h9l6-15 8 26 6-17 5 6h10" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
-          <circle cx="16" cy="88" r="2.2" fill="#F0D2DE"/>
-          <circle cx="104" cy="26" r="2.6" fill="#F0D2DE"/>
-          <circle cx="24" cy="22" r="1.6" fill="#F0D2DE" opacity="0.8"/>
-        </svg>
-      </div>
-      <p class="story-desc">Log every cycle with confidence and stop guessing — see your <strong>patterns clearly</strong> from day one.</p>
-      <div class="story-hint">Tap to continue →</div>
-      </div>
+    <div class="story-topbar">
+      <div class="logo">Kisha</div>
     </div>
 
-    <!-- SLIDE 3 — Stay Protected + Login/Signup -->
-    <div class="story-slide s3">
-      <div class="story-watermark" aria-hidden="true">
-        <div class="story-watermark-row">STAY PROTECTED</div>
-        <div class="story-watermark-row">STAY PROTECTED</div>
-        <div class="story-watermark-row">STAY PROTECTED</div>
-        <div class="story-watermark-row">STAY PROTECTED</div>
-        <div class="story-watermark-row">STAY PROTECTED</div>
-        <div class="story-watermark-row">STAY PROTECTED</div>
-        <div class="story-watermark-row">STAY PROTECTED</div>
-      </div>
-      <div class="story-content">
-      <div class="story-dashes"><span></span><span></span></div>
-      <h2 class="story-heading">Stay<br>Protected</h2>
-      <div class="story-icon">
-        <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M60 12l34 12v28c0 26-14 42-34 44-20-2-34-18-34-44V24z" stroke="#ffffff" stroke-width="2.2" stroke-linejoin="round" opacity="0.95"/>
-          <path d="M60 50c6-8 18-6 18 3c0 9-18 20-18 20s-18-11-18-20c0-9 12-11 18-3z" stroke="#ffffff" stroke-width="2" stroke-linejoin="round" opacity="0.9"/>
-          <circle cx="16" cy="30" r="1.8" fill="#F0D2DE" opacity="0.85"/>
-          <circle cx="104" cy="34" r="2.4" fill="#F0D2DE"/>
-        </svg>
-      </div>
-      <p class="story-desc">Your data is encrypted and <strong>always yours</strong> — never sold, never shared without asking.</p>
-      <div class="story-cta">
-        <a class="story-cta-btn story-cta" href="login.html" onclick="event.stopPropagation()">Log In</a>
-        <div class="story-signup-text story-cta" onclick="event.stopPropagation()">Don't have an account? <a href="signup.html">Create now</a></div>
-      </div>
-      </div>
-    </div>
+    <div class="story-slides" id="storySlides">
 
+      <!-- SLIDE 1 — Hero Wordmark -->
+      <div class="story-slide s1">
+        <div class="s1-content">
+          <div class="s1-wordmark">Kisha</div>
+        </div>
+        <div class="story-hint">Tap to continue →</div>
+      </div>
+
+      <!-- SLIDE 2 — Track Boldly -->
+      <div class="story-slide s2">
+        <div class="story-content">
+          <h2 class="story-heading">Track<br>Boldly</h2>
+        </div>
+        <div class="story-hint">Tap to continue →</div>
+      </div>
+
+      <!-- SLIDE 3 — Create Account + Login -->
+      <div class="story-slide s3">
+        <div class="story-content">
+          <h2 class="story-heading">Create<br>Account</h2>
+        </div>
+        <div class="story-cta">
+          <a class="story-cta-btn" href="login.html" onclick="event.stopPropagation()">Log In</a>
+          <div class="story-signup-text" onclick="event.stopPropagation()">Don't have an account? <a
+              href="signup.html">Create now</a></div>
+        </div>
+      </div>
+
+    </div>
   </div>
-</div>
 
-<script>
-const total = 3;
-let current = 0;
-let autoTimer = null;
-const slidesEl = document.getElementById('storySlides');
-const segs = document.querySelectorAll('.story-seg');
-const viewport = document.getElementById('storyViewport');
+  <script>
+    const total = 3;
+    let current = 0;
+    let autoTimer = null;
+    const slidesEl = document.getElementById('storySlides');
+    const segs = document.querySelectorAll('.story-seg');
+    const viewport = document.getElementById('storyViewport');
 
-function render(){
-  slidesEl.style.transform = 'translateX(-' + (current * (100/total)) + '%)';
-  segs.forEach((seg, i)=>{
-    seg.classList.remove('active','completed');
-    void seg.offsetWidth; // reset animation
-    if(i < current) seg.classList.add('completed');
-    if(i === current) seg.classList.add('active');
-  });
-  viewport.classList.add('on-dark');
-  clearTimeout(autoTimer);
-  autoTimer = setTimeout(nextSlide, 6000);
-}
-function nextSlide(){
-  current = (current + 1) % total;
-  render();
-}
-function prevSlide(){
-  current = current === 0 ? 0 : current - 1;
-  render();
-}
+    function render() {
+      slidesEl.style.transform = 'translateX(-' + (current * (100 / total)) + '%)';
+      segs.forEach((seg, i) => {
+        seg.classList.remove('active', 'completed');
+        void seg.offsetWidth; // reset animation
+        if (i < current) seg.classList.add('completed');
+        if (i === current) seg.classList.add('active');
+      });
+      viewport.classList.add('on-dark');
+      clearTimeout(autoTimer);
+      autoTimer = setTimeout(nextSlide, 6000);
+    }
+    function nextSlide() {
+      current = (current + 1) % total;
+      render();
+    }
+    function prevSlide() {
+      current = current === 0 ? 0 : current - 1;
+      render();
+    }
 
-viewport.addEventListener('click', function(e){
-  if(e.target.closest('.story-cta')) return; // let real links/buttons work untouched
-  const rect = viewport.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  if(x < rect.width * 0.4){ prevSlide(); } else { nextSlide(); }
-});
+    viewport.addEventListener('click', function (e) {
+      if (e.target.closest('.story-cta')) return; // let real links/buttons work untouched
+      const rect = viewport.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      if (x < rect.width * 0.4) { prevSlide(); } else { nextSlide(); }
+    });
 
-// basic swipe support
-let touchStartX = null;
-viewport.addEventListener('touchstart', e=>{ touchStartX = e.changedTouches[0].clientX; }, {passive:true});
-viewport.addEventListener('touchend', e=>{
-  if(touchStartX === null) return;
-  const dx = e.changedTouches[0].clientX - touchStartX;
-  if(Math.abs(dx) > 50){
-    if(e.target.closest('.story-cta')) { touchStartX = null; return; }
-    dx < 0 ? nextSlide() : prevSlide();
-  }
-  touchStartX = null;
-}, {passive:true});
+    // basic swipe support
+    let touchStartX = null;
+    viewport.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].clientX; }, { passive: true });
+    viewport.addEventListener('touchend', e => {
+      if (touchStartX === null) return;
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 50) {
+        if (e.target.closest('.story-cta')) { touchStartX = null; return; }
+        dx < 0 ? nextSlide() : prevSlide();
+      }
+      touchStartX = null;
+    }, { passive: true });
 
-// keyboard arrows for desktop
-document.addEventListener('keydown', e=>{
-  if(e.key === 'ArrowRight') nextSlide();
-  if(e.key === 'ArrowLeft') prevSlide();
-});
+    // keyboard arrows for desktop
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') nextSlide();
+      if (e.key === 'ArrowLeft') prevSlide();
+    });
 
-render();
-</script>
+    render();
+  </script>
 
 </body>
+
 </html>
