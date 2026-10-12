@@ -93,25 +93,50 @@
     }
 
     .story-cta-btn {
-      background: #4A1E29 !important;
+      background: transparent !important;
       color: #ffffff !important;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
-      font-weight: 700;
-      padding: 15px 64px;
-      border-radius: 22px;
+      font-family: 'Inter', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      padding: 8px 16px;
+      border: none !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
       text-decoration: none;
-      border: 1px solid rgba(255, 255, 255, 0.22);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
-      transition: all 0.2s ease;
-      letter-spacing: 0.3px;
+      letter-spacing: 0.8px;
       display: inline-block;
+      text-shadow:
+        0 1px 0 #d9c4cc,
+        0 2px 0 #b5919d,
+        0 3px 0 #895867,
+        0 4px 0 #5f2b3a,
+        0 5px 0 #3a131f,
+        0 6px 6px rgba(0, 0, 0, 0.65),
+        0 10px 18px rgba(0, 0, 0, 0.45);
+      transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), text-shadow 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+      cursor: pointer;
     }
 
     .story-cta-btn:hover {
-      background: #35131C !important;
+      background: transparent !important;
       transform: translateY(-2px);
-      box-shadow: 0 12px 34px rgba(0, 0, 0, 0.55);
+      text-shadow:
+        0 1px 0 #ffffff,
+        0 2px 0 #d9c4cc,
+        0 3px 0 #b5919d,
+        0 4px 0 #895867,
+        0 5px 0 #5f2b3a,
+        0 6px 0 #3a131f,
+        0 8px 10px rgba(0, 0, 0, 0.75),
+        0 12px 22px rgba(0, 0, 0, 0.5);
+    }
+
+    .story-cta-btn:active {
+      transform: translateY(3px);
+      text-shadow:
+        0 1px 0 #b5919d,
+        0 2px 0 #5f2b3a,
+        0 3px 4px rgba(0, 0, 0, 0.7);
     }
 
     .story-signup-text {
