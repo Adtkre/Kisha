@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700&display=swap');
+
 :root {
   --portrait-pink: #F0D2DE;
   --gizmo: #D89FB6;
@@ -46,7 +48,7 @@ h1,
 h2,
 h3,
 .font-display {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 p,
@@ -256,7 +258,7 @@ select {
 }
 
 .logo {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Poppins', sans-serif;
   font-weight: 700;
   font-size: 24px;
   color: var(--berry-bush);
@@ -432,7 +434,7 @@ select {
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-family: 'Playfair Display', serif;
+  font-family: 'Poppins', sans-serif;
   font-style: italic;
   font-size: 18px;
 }
@@ -893,7 +895,7 @@ select {
 .ring-day {
   font-size: 26px;
   font-weight: 800;
-  font-family: 'Playfair Display', serif;
+  font-family: 'Poppins', sans-serif;
   color: var(--berry-bush);
 }
 
@@ -943,7 +945,7 @@ select {
 .countdown-num {
   font-size: 30px;
   font-weight: 800;
-  font-family: 'Playfair Display', serif;
+  font-family: 'Poppins', sans-serif;
   color: var(--berry-bush);
 }
 
@@ -1260,7 +1262,7 @@ select {
 .stat-val {
   font-size: 22px;
   font-weight: 800;
-  font-family: 'Playfair Display', serif;
+  font-family: 'Poppins', sans-serif;
   color: var(--portrait-pink);
 }
 
@@ -1688,7 +1690,7 @@ body.story-body {
 }
 
 .story-heading {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Poppins', sans-serif;
   font-weight: 700;
   font-size: clamp(58px, 17vw, 92px);
   line-height: 1.02;
