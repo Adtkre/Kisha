@@ -35,27 +35,19 @@
       border-radius: 36px;
 
       background:
-        radial-gradient(circle at 12% 6%,
-          rgba(255, 255, 255, 0.6),
-          transparent 42%),
-        radial-gradient(circle at 88% 92%,
-          rgba(255, 255, 255, 0.35),
-          transparent 40%),
-        linear-gradient(160deg,
-          var(--clay-bg) 0%,
-          rgba(240, 210, 222, 0.8) 100%);
+        url('assets/Blush%20Pink%20Doodle%20Garden.png') center center / cover no-repeat,
+        linear-gradient(160deg, var(--clay-bg) 0%, rgba(240, 210, 222, 0.8) 100%);
     }
 
 
     /* =========================
-   FLOWERS
+   FLOWERS & SPARKLES
+   (Hidden when doodle garden background is applied)
    ========================= */
 
-    .hero-flower {
-      position: absolute;
-      opacity: 0.3;
-      pointer-events: none;
-      color: var(--berry-bush);
+    .hero-flower,
+    .hero-sparkle {
+      display: none;
     }
 
     .hero-flower svg {

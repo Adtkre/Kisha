@@ -180,6 +180,12 @@ select {
   transform: translateY(-2px);
 }
 
+.hero-card {
+  background:
+    url('../assets/Blush%20Pink%20Doodle%20Garden.png') center center / cover no-repeat,
+    linear-gradient(160deg, var(--clay-bg) 0%, rgba(240, 210, 222, 0.8) 100%);
+}
+
 .clay-btn {
   border-radius: 18px;
   padding: 16px 24px;
